@@ -1,0 +1,13 @@
+\select@language {british}
+\contentsline {section}{\numberline {1}Mission Statement}{2}
+\contentsline {section}{\numberline {2}UI and Feature Description}{3}
+\contentsline {subsection}{\numberline {2.1}Units of Measurement}{3}
+\contentsline {subsubsection}{\numberline {2.1.1}Mile}{3}
+\contentsline {subsubsection}{\numberline {2.1.2}Scandinavian Mile}{3}
+\contentsline {subsubsection}{\numberline {2.1.3}Kilometre}{3}
+\contentsline {section}{\numberline {3}Technical Description}{4}
+\contentsline {subsection}{\numberline {3.1}Anatomy of an Anonymoose Post}{4}
+\contentsline {subsection}{\numberline {3.2}Status Codes / AM protocol}{4}
+\contentsline {subsection}{\numberline {3.3}Operation Description}{4}
+\contentsline {subsection}{\numberline {3.4}Algorithms for Calculating Distance}{5}
+\contentsline {subsubsection}{\numberline {3.4.1}Imposing the Five Mile Limit}{5}
