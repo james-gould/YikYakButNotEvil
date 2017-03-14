@@ -1,10 +1,15 @@
 /* crate root for the Anonymoose server, accepts TCP streams from clients and handles them */
 extern crate byteorder;
+extern crate rand;
+
 
 use std::io::*;
 use std::net::{TcpListener, TcpStream};
 use std::thread;
 use std::str;
+use rand::Rng;
+
+use self_test::test;
 
 /* include the other parts of the server */
 mod stream;
@@ -33,11 +38,11 @@ fn command()
  * this function handles incoming TCP streams and calls the required function for their further
  * processing
  */
-fn handle_client(mut stream: TcpStream)
+fn handle_client(stream: TcpStream)
 {
 
     /*read the TCP stream into a buffer*/
-    let buffer = BufReader::new(&mut stream);
+    let buffer = BufReader::new(&stream);
 
     /*get the first four chars as a string slice to determine the next action*/
     for line in buffer.lines() {
@@ -47,13 +52,10 @@ fn handle_client(mut stream: TcpStream)
         let status_code = &current_line[0..3];
 
         match status_code {
-            "100" => println!("sending posts to client"),
+            "100" => test(&stream),
             _ => println!("invalid status code!"),
         }
     }
-
-    // Write our response
-    //stream.write(response).unwrap();
 }
 
 fn main()

@@ -5,3 +5,5 @@ authors = ["Joseph Thompson <jot32@aber.ac.uk>"]
 
 [dependencies]
 byteorder = "0.5.3"
+rand = "0.3"
+

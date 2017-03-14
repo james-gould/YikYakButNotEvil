@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.17 (TeX Live 2016) (preloaded format=pdflatex 2016.10.25)  31 OCT 2016 17:25
+This is pdfTeX, Version 3.14159265-2.6-1.40.17 (TeX Live 2016) (preloaded format=pdflatex 2016.10.25)  11 MAR 2017 13:24
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -238,9 +238,6 @@ LaTeX Warning: Label `my-label' multiply defined.
 
 LaTeX Warning: Label `my-label' multiply defined.
 
-
-LaTeX Warning: Label `my-label' multiply defined.
-
 )
 \openout1 = `main.aux'.
 
@@ -364,13 +361,39 @@ File: umsb.fd 2013/01/14 v3.01 AMS symbols B
 [1
 
 {/usr/local/texlive/2016/texmf-var/fonts/map/pdftex/updmap/pdftex.map}]
-[2
+LaTeX Font Info:    Try loading font information for OMS+cmr on input line 25.
+
+(/usr/local/texlive/2016/texmf-dist/tex/latex/base/omscmr.fd
+File: omscmr.fd 2014/09/29 v2.5h Standard LaTeX font definitions
+)
+LaTeX Font Info:    Font shape `OMS/cmr/m/n' in size <12> not available
+(Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 25.
+ [2
 
 ] [3
 
-] [4
+] [4]
+[5
 
-] [5
+]
+Overfull \hbox (42.17122pt too wide) in paragraph at lines 115--130
+ [][] 
+ []
+
+[6
+
+]
+Underfull \hbox (badness 10000) in paragraph at lines 154--155
+
+ []
+
+[7
+
+] [8
+
+] [9
+
+] [10
 
 ] (./main.aux)
 
@@ -378,21 +401,22 @@ LaTeX Warning: There were multiply-defined labels.
 
  ) 
 Here is how much of TeX's memory you used:
- 4846 strings out of 493014
- 69718 string characters out of 6133350
+ 4863 strings out of 493014
+ 70020 string characters out of 6133350
  152791 words of memory out of 5000000
- 8310 multiletter control sequences out of 15000+600000
+ 8324 multiletter control sequences out of 15000+600000
  13226 words of font info for 51 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 38i,9n,32p,343b,236s stack positions out of 5000i,500n,10000p,200000b,80000s
+ 38i,9n,32p,671b,236s stack positions out of 5000i,500n,10000p,200000b,80000s
 </usr/local/texlive/2016/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx12.pfb
 ></usr/local/texlive/2016/texmf-dist/fonts/type1/public/amsfonts/cm/cmr12.pfb><
-/usr/local/texlive/2016/texmf-dist/fonts/type1/public/amsfonts/cm/cmti12.pfb></
-usr/local/texlive/2016/texmf-dist/fonts/type1/public/amsfonts/cm/cmtt12.pfb>
-Output written on main.pdf (5 pages, 62202 bytes).
+/usr/local/texlive/2016/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb></
+usr/local/texlive/2016/texmf-dist/fonts/type1/public/amsfonts/cm/cmti12.pfb></u
+sr/local/texlive/2016/texmf-dist/fonts/type1/public/amsfonts/cm/cmtt12.pfb>
+Output written on main.pdf (10 pages, 83073 bytes).
 PDF statistics:
- 36 PDF objects out of 1000 (max. 8388607)
- 24 compressed objects within 1 object stream
+ 57 PDF objects out of 1000 (max. 8388607)
+ 39 compressed objects within 1 object stream
  0 named destinations out of 1000 (max. 500000)
  1 words of extra memory for PDF output out of 10000 (max. 10000000)
 

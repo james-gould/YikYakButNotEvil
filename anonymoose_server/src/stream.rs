@@ -1,14 +1,15 @@
 /* functions for interacting with the client */
 use std::net::{TcpStream};
+use std::io::*;
+use post;
+use post::Post;
 
+/* sends a post to the client */
+pub fn send_post_to_client(mut stream: &TcpStream, payload: Vec<u8>)
+{
+	   let mut writer = BufWriter::new(&mut stream);
+	   for i in payload {
+	   		writer.write(&[i]).unwrap();
+	   }
 
-/*
- * gathers the top 30 posts in the client's area and their replies into a
- * buffer then sends them over the TCP stream to the client in the anonymoose
- * post transmission format described in the documentation.
- */
-pub fn send_posts(mut stream: TcpStream) {
-	//TODO: actually implement this, for the time being send a single dummy post
-
-	//ask for client's location
 }
