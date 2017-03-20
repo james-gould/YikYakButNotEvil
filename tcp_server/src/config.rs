@@ -7,6 +7,7 @@ pub struct Config
 	pub content_ip: String; /* address and port for content server */
 
 	pub mode: i8; /* set mode, 0 for dev, 1 for prod ect */
+	pub debug: i8; /* toggle debug messages */
 
 }
 
@@ -16,5 +17,6 @@ pub fn default_conf() {
 		database_ip: "postgres://postgres@localhost",
 		content_ip: "localhost:1338",
 		mode: 0,
+		debug: 1,
 	}
 }

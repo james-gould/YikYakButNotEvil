@@ -1,0 +1,9 @@
+[package]
+name = "dummy_client"
+version = "0.0.1"
+authors = ["Joseph Thompson <>"]
+
+[dependencies]
+byteorder = "0.5.3"
+rand = "0.3"
+ansi_term = "0.9"

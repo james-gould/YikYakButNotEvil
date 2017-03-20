@@ -1,10 +1,9 @@
 /* functions for encoding, decoding and general post IO */
 use byteorder::{BigEndian, ByteOrder};
-use rand::*;
 
 
 /*
- * this struct provides a template for posts as they exist within the server,
+ * this struct provides a template for posts as they exist within the program,
  * it is an easy intermediate form between the postgres database and the machine
  * -readable Anonymoose transmission format.
  */
@@ -21,7 +20,7 @@ pub struct Post
  	pub user_id: i64, /* unique user ID */ 	
 }
 
-/* this struct describes a connected user */
+/* this struct describes a connected user in the same manner as Post */
 pub struct User
 {
 	pub user_name: String, /* username - optional */
@@ -126,11 +125,7 @@ pub fn post_decode(mut target: Vec<u8>) -> Post
 	let timestamp_buffer = &timestamp_vector[..];
 	let timestamp = BigEndian::read_i32(timestamp_buffer);
 
-	/* generate a unique post ID */
-	let mut rng = thread_rng();
-	let post_id: i64 = rng.gen();
-
-	let post_buffer = Post {post_id: post_id,
+	let post_buffer = Post {post_id: 0, /* this is generated on the server */
 							timestamp: timestamp,
 							latitude: latitude,
 							longitude: longitude,
@@ -146,48 +141,50 @@ pub fn post_decode(mut target: Vec<u8>) -> Post
 
 }
 
-/* decode incoming user data and return a User struct */
-pub fn user_decode(mut target: Vec<u8>) -> User
+/* encode user data and return a vector of bytes */
+pub fn user_encode(target: User) -> Vec<u8>
 {
-	if target.len() < 22 {
-		panic!("Malformed user data!");
-	}
+	/* encode the post header */
+	let header_buffer = "INIT".as_bytes();
 
-	/* decode the username */
-	let user_name_vector = target.split_off(22);
-	let user_name = String::from_utf8(user_name_vector).unwrap();
+	/* encode the user ID - this uses the ByteOrder module to serialise
+	the 64-bit number as eight individual bytes. We're using big-endian
+	formatting (obviously), just use the equivalent in the client's native
+	language */
+	let mut user_id_buffer = [0; 8];
+	BigEndian::write_i64(&mut user_id_buffer, target.user_id);
 
-	/* decode the connection type */
-	let connection_type_vector = target.split_off(21);
-	let connection_type = connection_type_vector[0];
+	/* encode the latitude */
+	let mut latitude_buffer = [0; 4];
+	BigEndian::write_f32(&mut latitude_buffer, target.latitude);
 
-	/* decode the range */
-	let range_vector = target.split_off(20);
-	let range_buffer = &range_vector[..];
-	let range = BigEndian::read_i16(range_buffer);
+	/* encode the longitude */
+	let mut longitude_buffer = [0; 4];
+	BigEndian::write_f32(&mut longitude_buffer, target.longitude);
 
-	/* decode the longitude */
-	let longitude_vector = target.split_off(16);
-	let longitude_buffer = &longitude_vector[..];
-	let longitude = BigEndian::read_f32(longitude_buffer);
+	/* encode the range */
+	let mut range_buffer = [0; 2];
+	BigEndian::write_i16(&mut range_buffer, target.range);
 
-	/* decode the latitude */
-	let latitude_vector = target.split_off(12);
-	let latitude_buffer = &latitude_vector[..];
-	let latitude = BigEndian::read_f32(latitude_buffer);
+	/* encode the connection type - this is a single byte so
+	we don't need to serialise this field */
+	let mut connection_type_buffer = [0; 1];
+	connection_type_buffer[0] = target.connection_type;
 
-	/* decode the user ID */
-	let user_id_vector = target.split_off(4);
-	let user_id_buffer = &user_id_vector[..];
-	let user_id = BigEndian::read_i64(user_id_buffer);
+	/* encode the username */
+	let user_name = target.user_name;
+	let user_name_buffer = user_name.as_bytes();
 
-	let user_buffer = User {user_name: user_name,
-							user_id: user_id,
-							latitude: latitude,
-							longitude: longitude,
-							range: range,
-							connection_type: connection_type,
-							};
+	/* now stick it all together in a single buffer */
+	let mut user_buffer: Vec<u8> = Vec::new();
+	
+	user_buffer.extend_from_slice(&user_id_buffer);
+	user_buffer.extend_from_slice(&latitude_buffer);
+	user_buffer.extend_from_slice(&longitude_buffer);
+	user_buffer.extend_from_slice(&range_buffer);
+	user_buffer.extend_from_slice(&connection_type_buffer);
+	user_buffer.extend_from_slice(&user_name_buffer);
+
 	return user_buffer;
 } 
 

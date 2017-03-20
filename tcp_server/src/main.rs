@@ -56,6 +56,7 @@ fn handle_client(stream: TcpStream)
 
         match status_code {
             "100" => user_data = stream::initial_connection(&stream),
+            //"100" => stream::ready(&stream),
             _ => println!("invalid status code!"),
         }
     }
@@ -66,12 +67,12 @@ fn main()
     println!("  ___                                                         ");
     println!(" / _ \\                                                        ");
     println!("/ /_\\ \\_ __   ___  _ __  _   _ _ __ ___   ___   ___  ___  ___ ");
-    println!("|  _  | '_ \\ / _ \\| '_ \\| | | | '_ ` _ \\ / _ \\ / _ \\/ __|/ _\\"); /* bloody hell */
+    println!("|  _  | '_ \\ / _ \\| '_ \\| | | | '_ ` _ \\ / _ \\ / _ \\/ __|/ _\\");
     println!("| | | | | | | (_) | | | | |_| | | | | | | (_) | (_) \\__ \\  __/");
     println!("\\_| |_/_| |_|\\___/|_| |_|\\__, |_| |_| |_|\\___/ \\___/|___/\\___|");
     println!("                          __/ |");
     println!("                         |___/");
-    println!("");
+    println!("");  /* bloody hell */
 
     println!("TCP Server version 0.0.1");
     println!("Copyright (c) Anonymoose Industries Ltd, all rights reserved.");
