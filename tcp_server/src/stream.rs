@@ -7,7 +7,7 @@ use post::*;
 /* tells the client the server is ready for IO */
 pub fn ready(mut stream: &TcpStream) {
 	let mut writer = BufWriter::new(&mut stream);
-	writer.write("200\n".as_bytes());
+	writer.write("201\n".as_bytes());
 }
 
 /* sends a vector of bytes to the client */

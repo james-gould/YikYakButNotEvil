@@ -1,0 +1,38 @@
+LOG:  database system was shut down at 2017-06-11 21:53:48 BST
+LOG:  MultiXact member wraparound protections are now enabled
+LOG:  database system is ready to accept connections
+LOG:  autovacuum launcher started
+FATAL:  role "josephthompson" does not exist
+LOG:  received fast shutdown request
+LOG:  aborting any active transactions
+LOG:  autovacuum launcher shutting down
+LOG:  shutting down
+LOG:  database system is shut down
+LOG:  database system was shut down at 2017-06-11 21:57:34 BST
+LOG:  MultiXact member wraparound protections are now enabled
+LOG:  database system is ready to accept connections
+LOG:  autovacuum launcher started
+ERROR:  database "josephthompson" already exists
+STATEMENT:  CREATE DATABASE josephthompson;
+ERROR:  syntax error at or near "psql" at character 1
+STATEMENT:  psql postgres_test
+	CREATE TABLE TEST(INT ID PRIMARY KEY, VARCHAR(20) NAME);
+ERROR:  role "tiger" does not exist
+STATEMENT:  ALTER USER tiger PASSWORD 'md54a484004cef4efebf22b2f7ec9cdc439'
+ERROR:  role "anonymoose" does not exist
+STATEMENT:  ALTER USER anonymoose PASSWORD 'md52204bfc0ae4e8ca22b6222b7b5633b86'
+ERROR:  syntax error at or near ""leopard"" at character 44
+STATEMENT:  CREATE ROLE anonymoose WITH LOGIN PASSWORD "leopard"
+	CREATE ROLE anonymoose WITH LOGIN PASSWORD "leopard";
+ERROR:  type "id" does not exist at character 24
+STATEMENT:  CREATE TABLE test1(INT ID PRIMARY KEY);
+ERROR:  type "id" does not exist at character 25
+STATEMENT:  CREATE TABLE TEST1 (INT ID PRIMARY KEY, INT NUMBER);
+ERROR:  type "id" does not exist at character 25
+STATEMENT:  CREATE TABLE TEST1 (INT ID PRIMARY KEY, INT NUMBER);
+ERROR:  type "number" does not exist at character 45
+STATEMENT:  CREATE TABLE TEST1 (ID INT PRIMARY KEY, INT NUMBER);
+LOG:  autovacuum launcher shutting down
+LOG:  received smart shutdown request
+LOG:  shutting down
+LOG:  database system is shut down

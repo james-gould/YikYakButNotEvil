@@ -1,13 +1,12 @@
-/* crate root for the Anonymoose server, accepts TCP streams from clients and
-handles them */
+/* set up our dependencies of which there are many */
 extern crate byteorder;
 extern crate ansi_term;
 extern crate postgres;
 extern crate rand;
 
-
 use std::io::*;
 use std::net::{TcpListener, TcpStream};
+use postgres::{Connection, TlsMode};
 use std::thread;
 use std::str;
 use rand::Rng;
@@ -16,23 +15,6 @@ use rand::Rng;
 mod stream;
 mod post;
 mod database;
-
-/* command interpreter function */
-fn command()
-{
-    let mut cmd_buffer = String::new();
-    println!("Enter a command");
-    loop {
-        print!(">");
-        std::io::stdin().read_to_string(&mut cmd_buffer);
-        let cmd_slice = &cmd_buffer[0..4];
-
-        match cmd_slice {
-            "test" => println!("performing self-test"),
-            _ => println!("Improper Command!"),
-        }
-    }
-}
 
 
 /* 
@@ -80,17 +62,17 @@ fn main()
 
     /* load configuration */
     println!("Loading configuration...");
+    println!("Done!");
 
-    /* nice big warning if we're running in production */
-    println!("You are running in DEVELOPMENT MODE");
+    /* connect to the postgres server */
+    println!("Connecting to the post database");
+    let dbase = Connection::connect("postgres://anonymoose:tiger@localhost",
+        TlsMode::None).unwrap();
     
 
     let listener = TcpListener::bind("localhost:1337").unwrap();
 
     println!("TCP listener local information: {:?}\n", listener.local_addr());
-
-    /* start the command interpreter */
-    thread::spawn(move || { command(); });
 
     /* listen for TCP streams and stick each into its own thread */
     for stream in listener.incoming() {
