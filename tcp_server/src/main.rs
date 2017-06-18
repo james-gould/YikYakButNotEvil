@@ -3,6 +3,7 @@ extern crate byteorder;
 extern crate ansi_term;
 extern crate postgres;
 extern crate rand;
+#[macro_use] extern crate text_io;
 
 use std::io::*;
 use std::net::{TcpListener, TcpStream};
@@ -18,13 +19,17 @@ mod database;
 
 
 /* 
- * this function handles incoming TCP streams and calls the required function for their further
- * processing
+ * this function drives client-server interaction, responding to status codes
  */
 fn handle_client(stream: TcpStream)
 {
+    /* connect to the Postgres database */
+    println!("Connecting to the post database...");
+    let dbase = Connection::connect("postgres://josephthompson:tiger@localhost",
+        TlsMode::None).unwrap();
+    
     /* this holds the user information */
-    let mut user_data: post::User;
+    let user_data: post::User;
     
     /*read the TCP stream into a buffer*/
     let buffer = BufReader::new(&stream);
@@ -37,8 +42,40 @@ fn handle_client(stream: TcpStream)
         let status_code = &current_line[0..3];
 
         match status_code {
-            "100" => user_data = stream::initial_connection(&stream),
-            //"100" => stream::ready(&stream),
+            "100" => {
+                /* get information about the client */
+                let user_data = stream::initial_connection(&stream);
+
+                /* print username and id */
+                println!("{} connected with ID {}", user_data.user_name, user_data.user_id);
+
+                /* retrieve nearby posts from the database */
+                let posts_buffer: Vec<post::Post> =
+                    database::get_posts(&dbase, user_data);
+
+                /* serialise post into the AM format for transmission */
+                let mut out_buffer: Vec<u8> = Vec::new();
+                for p in posts_buffer {
+                   let raw_data = post::post_encode(p);
+                   /* push each byte of the newly encoded data to the buffer */
+                   for byte in raw_data {
+                        out_buffer.push(byte);
+                   }
+                }
+                stream::send_to_client(&stream, out_buffer);
+            }
+            "102" => {
+                /* accept the raw AM format post data */
+                let raw_post: Vec<u8> = stream::recieve_from_client(&stream);
+
+                /* convert this data into a Post struct */
+                let post: post::Post = post::post_decode(raw_post);
+
+                /* add this post to the database */
+                database::add_post(&dbase, post);
+
+                stream::success(&stream);
+            }
             _ => println!("invalid status code!"),
         }
     }
@@ -56,19 +93,13 @@ fn main()
     println!("                         |___/");
     println!("");  /* bloody hell */
 
-    println!("TCP Server version 0.0.1");
-    println!("Copyright (c) Anonymoose Industries Ltd, all rights reserved.");
+    println!("TCP Server version ALPHA 0.0.2");
+    println!("Copyright (c) The Anonymoose Team, all rights reserved.");
     println!("Starting...\n");
 
     /* load configuration */
     println!("Loading configuration...");
-    println!("Done!");
-
-    /* connect to the postgres server */
-    println!("Connecting to the post database");
-    let dbase = Connection::connect("postgres://anonymoose:tiger@localhost",
-        TlsMode::None).unwrap();
-    
+    println!("Done!");    
 
     let listener = TcpListener::bind("localhost:1337").unwrap();
 

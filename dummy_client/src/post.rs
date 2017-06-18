@@ -28,7 +28,7 @@ pub struct User
 	pub latitude: f32, /* latitude in decimal degrees */
 	pub longitude: f32, /* longitude in decimal degrees */
 	pub range: i16, /* selected range in miles */
-	pub connection_type: u8 /* connection type (2G, 3G, 4G, wifi) */ 
+	pub connection_type: i16 /* connection type (2G, 3G, 4G, wifi) */ 
 }
 
 /* encodes post structs into the Anonymoose transmission format */
@@ -166,10 +166,9 @@ pub fn user_encode(target: User) -> Vec<u8>
 	let mut range_buffer = [0; 2];
 	BigEndian::write_i16(&mut range_buffer, target.range);
 
-	/* encode the connection type - this is a single byte so
-	we don't need to serialise this field */
-	let mut connection_type_buffer = [0; 1];
-	connection_type_buffer[0] = target.connection_type;
+	/* encode the connection type */
+	let mut connection_type_buffer = [0; 2];
+	BigEndian::write_i16(&mut connection_type_buffer, target.connection_type);
 
 	/* encode the username */
 	let user_name = target.user_name;
@@ -177,7 +176,8 @@ pub fn user_encode(target: User) -> Vec<u8>
 
 	/* now stick it all together in a single buffer */
 	let mut user_buffer: Vec<u8> = Vec::new();
-	
+
+	user_buffer.extend_from_slice(&header_buffer);
 	user_buffer.extend_from_slice(&user_id_buffer);
 	user_buffer.extend_from_slice(&latitude_buffer);
 	user_buffer.extend_from_slice(&longitude_buffer);

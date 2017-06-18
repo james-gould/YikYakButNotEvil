@@ -18,7 +18,7 @@ pub fn init_tables(dbase: &Connection)
                     downvotes       SMALLINT NOT NULL,
                     text            VARCHAR,
                     parent_id       BIGINT,
-                    user_id         BIGINT REFERENCES users(user_id),
+                    user_id         BIGINT
 
                   )", &[]).unwrap();
 	
@@ -28,7 +28,7 @@ pub fn init_tables(dbase: &Connection)
 	dbase.execute("CREATE TABLE users (
                     user_id BIGINT PRIMARY KEY NOT NULL,
                     user_name VARCHAR,
-                    karma INT NOT NULL,
+                    karma INT NOT NULL
                   )", &[]).unwrap();
 
 }

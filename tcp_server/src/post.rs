@@ -154,11 +154,11 @@ pub fn user_decode(mut target: Vec<u8>) -> User
 	}
 
 	/* decode the username */
-	let user_name_vector = target.split_off(22);
+	let user_name_vector = target.split_off(23);
 	let user_name = String::from_utf8(user_name_vector).unwrap();
 
 	/* decode the connection type */
-	let connection_type_vector = target.split_off(21);
+	let connection_type_vector = target.split_off(22);
 	let connection_type = connection_type_vector[0];
 
 	/* decode the range */

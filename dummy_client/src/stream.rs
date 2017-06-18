@@ -11,6 +11,7 @@ pub fn send_to_server(mut stream: &TcpStream, payload: Vec<u8>)
 	   for i in payload {
 	   		writer.write(&[i]).unwrap();
 	   }
+	   writer.write("\n".as_bytes());
 
 }
 

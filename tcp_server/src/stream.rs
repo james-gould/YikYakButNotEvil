@@ -10,6 +10,12 @@ pub fn ready(mut stream: &TcpStream) {
 	writer.write("201\n".as_bytes());
 }
 
+/* tells the client the server completed the operation successfully */
+pub fn success(mut stream: &TcpStream) {
+	let mut writer = BufWriter::new(&mut stream);
+	writer.write("200\n".as_bytes());
+}
+
 /* sends a vector of bytes to the client */
 pub fn send_to_client(mut stream: &TcpStream, payload: Vec<u8>)
 {
@@ -26,10 +32,12 @@ pub fn recieve_from_client(mut stream: &TcpStream) -> Vec<u8>
 	/* tell the client we're ready for IO */
 	ready(stream);
 
+	let newline: u8 = 0x0a;
+
 	/* read the stream into a buffer */
 	let mut reader = BufReader::new(&mut stream);
 	let mut in_buffer: Vec<u8> = Vec::new();
-	reader.read_to_end(&mut in_buffer);
+	reader.read_until(newline, &mut in_buffer);
 	 	
 	return in_buffer;
 }

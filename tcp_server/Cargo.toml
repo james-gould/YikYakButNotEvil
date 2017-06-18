@@ -1,13 +1,15 @@
 [package]
 name = "anonymoose_server"
 version = "0.0.1"
-authors = ["Joseph Thompson <jot32@aber.ac.uk>"]
+authors = ["Joseph Thompson <jrdthompson@protonmail.com>"]
 
 [dependencies]
 byteorder = "0.5.3"
 rand = "0.3"
 ansi_term = "0.9"
 postgres = "0.13"
+text_io = "0.1.6"
+
 
 
 
