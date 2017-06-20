@@ -11,6 +11,12 @@ mod stream;
 use post::*;
 use stream::*;
 
+fn intial_connection(stream: &TcpStream) {
+    /* serialise our user data and send it to the server */
+    let vector = user_encode(example_user_data());
+    send_to_server(&stream, vector);
+}
+
 fn main()
 {
 	println!("Anonymoose Dummy Client version 0.0.1");
@@ -33,10 +39,23 @@ fn main()
     println!("Waiting for response...");
     for line in in_buffer.lines() {
         let current_line = line.unwrap();
-        println!("Server status code {}", current_line);
-        /* serialise our user data and send it to the server */
-        let vector = user_encode(example_user_data());
-        send_to_server(&stream, vector);
+        let status_code = &current_line[0..3];
+
+        println!("Server status code {}", status_code);
+
+        match status_code {
+            "201" => {
+                println!("Expecting IO...");
+                intial_connection(&stream);
+            }
+            "200" => {
+                println!("Operation Successful!");
+            }
+            _ => {
+                println!("Operation Failed!");
+            }
+            
+        }
         
     }
 }

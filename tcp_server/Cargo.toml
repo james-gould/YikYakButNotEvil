@@ -1,6 +1,6 @@
 [package]
-name = "anonymoose_server"
-version = "0.0.1"
+name = "tcp_server"
+version = "0.0.3"
 authors = ["Joseph Thompson <jrdthompson@protonmail.com>"]
 
 [dependencies]

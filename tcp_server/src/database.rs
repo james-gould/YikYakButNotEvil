@@ -66,8 +66,8 @@ pub fn get_posts(dbase: &Connection, user: User) -> Vec<Post>
 	let mut posts_buffer: Vec<Post> = Vec::new();
 
 	/* query the database to find all posts within the range */
-	for row in &dbase.query("SELECT * FROM posts WHERE latitude BETWEEN $1 AND $2
-								AND longitude BETWEEN $3 AND $4",
+	for row in &dbase.query("SELECT * FROM posts WHERE latitude BETWEEN $1 AND
+								$2 AND longitude BETWEEN $3 AND $4",
 							&[&max_latitude, &min_latitude, &max_longitude,
 								&min_longitude]).unwrap() { 
 	    let current_post = Post {
@@ -87,6 +87,22 @@ pub fn get_posts(dbase: &Connection, user: User) -> Vec<Post>
 	    posts_buffer.push(current_post);
 	}
 	return posts_buffer;
+}
+
+pub fn vote(dbase: &Connection, mode: i8, post_id: i64)
+{
+	let trn = dbase.transaction().unwrap();
+	if mode == 0 {
+		trn.execute("UPDATE posts
+						SET upvotes = upvotes + 1
+						WHERE post_id = $1", &[&post_id]).unwrap();
+	}
+	else {
+		trn.execute("UPDATE posts
+						SET downvotes = downvotes + 1
+						WHERE post_id = $1", &[&post_id]).unwrap();
+	}
+	trn.commit().unwrap();
 }
 
 

@@ -32,12 +32,12 @@ pub fn recieve_from_client(mut stream: &TcpStream) -> Vec<u8>
 	/* tell the client we're ready for IO */
 	ready(stream);
 
-	let newline: u8 = 0x0a;
+	let endchar: u8 = 0x0a;
 
 	/* read the stream into a buffer */
 	let mut reader = BufReader::new(&mut stream);
 	let mut in_buffer: Vec<u8> = Vec::new();
-	reader.read_until(newline, &mut in_buffer);
+	reader.read_until(endchar, &mut in_buffer);
 	 	
 	return in_buffer;
 }
