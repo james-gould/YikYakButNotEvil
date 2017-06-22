@@ -216,6 +216,7 @@ Post data is sent between the client app and the server using the following form
 104 & client requesting deletion\\
 105 & client reporting a post\\
 106 & client requesting nearby posts\\
+107 & client requesting replies\\
 &\\
 200 & operation successful\\
 201 & server standing by for IO\\
@@ -243,6 +244,7 @@ downvote & UTF-8 102 + UTF-8 1 + UTF-8 post ID\\
 add post & UTF-8 103 + serialised post data\\
 delete post & UTF-8 104 + UTF-8 post ID\\
 report post & UTF-8 105 + UTF-8 post ID\\
+request replies & UTF-8 107 + UTF=8 post ID\\
 \end{tabular}
 \end{table}
 

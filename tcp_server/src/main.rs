@@ -54,20 +54,7 @@ fn handle_client(stream: TcpStream)
                 println!("{} connected with ID {}", user_data.user_name,
                     user_data.user_id);
 
-                /* retrieve nearby posts from the database */
-                let posts_buffer: Vec<post::Post> =
-                    database::get_posts(&dbase, user_data);
-
-                /* serialise post into the AM format for transmission */
-                let mut out_buffer: Vec<u8> = Vec::new();
-                for p in posts_buffer {
-                   let raw_data = post::post_encode(p);
-                   /* push each byte of the newly encoded data to the buffer */
-                   for byte in raw_data {
-                        out_buffer.push(byte);
-                   }
-                }
-                stream::send_to_client(&stream, out_buffer);
+                stream(send_to_client(&stream, "202\n".into_bytes()));
             }
             /* client adding a post */
             "102" => {
@@ -98,6 +85,23 @@ fn handle_client(stream: TcpStream)
                 //database::vote(&dbase, mode, 45634745746);
                 println!("debug");
 
+            }
+            /* client requesting nearby posts */
+            "106" {
+                /* retrieve nearby posts from the database */
+                let posts_buffer: Vec<post::Post> =
+                    database::get_posts(&dbase, user_data);
+
+                /* serialise post into the AM format for transmission */
+                let mut out_buffer: Vec<u8> = Vec::new();
+                for p in posts_buffer {
+                   let raw_data = post::post_encode(p);
+                   /* push each byte of the newly encoded data to the buffer */
+                   for byte in raw_data {
+                        out_buffer.push(byte);
+                   }
+                }
+                stream::send_to_client(&stream, out_buffer);
             }
             _ => println!("Client Sent Invalid Status Code..."),
         }
