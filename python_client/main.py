@@ -5,19 +5,8 @@
 import socket
 import post
 
-TCP_IP = 'localhost'
-TCP_PORT = 1337
-BUFFER_SIZE = 20  # Normally 1024, but we want fast response
+sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+server_address = ('localhost', 1337)
+sock.connect(server_address)
 
-s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-s.bind((TCP_IP, TCP_PORT))
-s.listen(1)
-
-conn, addr = s.accept()
-print 'Connection address:', addr
-while 1:
-    data = conn.recv(BUFFER_SIZE)
-    if not data: break
-    print "received data:", data
-    conn.send(data)  # echo
-conn.close()
+sock.sendall("100\n")

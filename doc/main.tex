@@ -11,8 +11,8 @@
 
 \begin{document}
 
-\title{\textbf{Anonymoose \\ version 0.0.3}}
-\author{Anonymoose Industries Ltd \\ \textit{Aaron Walker, Alex Toop, Farouk Jouti and Joseph Thompson} \\ \\ \textcolor{red}{PRIVATE AND CONFIDENTIAL}}
+\title{\textbf{MooseCast \\ version 0.0.3}}
+\author{MooseCast Industries Ltd \\ \textit{Aaron Walker, Alex Toop, Farouk Jouti and Joseph Thompson} \\ \\ \textcolor{red}{PRIVATE AND CONFIDENTIAL}}
 \date{}
 \maketitle
 
@@ -20,16 +20,16 @@
 \clearpage
 
 \section{Core Features}
-Anonymoose is a mobile app which allows users to broadcast pictures and both live and recorded audio/video to their local areas. It is a combines the spontaneity of Snapchat-like apps with the anonymity and locality of YikYak-like apps. 
+MooseCast is a mobile app which allows users to anonymously broadcast text, pictures and both live and recorded audio/video to their local areas. It is a combines the spontaneity of Snapchat-like apps with the anonymity and locality of YikYak-like apps. 
 \begin{itemize}
-\item Users may post images, audio and video which will be seen by all other users in the geographical vicinity.
+\item Users may post text, images, audio and video which will be seen by all other users in the geographical vicinity.
 \item Users may livestream audio and video to all other users in the geographical vicinity.
 \item Users earn points based on the popularity of their posts, users with more points can broadcast to a wider audience.
 \item Users can post either with a username or anonymously, and anonymous posts contain no identifiable data.
 \end{itemize} 
 \clearpage
 \section{General Architecture}
-There are several components to Anonymoose:
+There are several components to MooseCast:
 \begin{itemize}
 \item The TCP server is the only component visible to the client app, it handles incoming connections, serves the appropriate content and streams to clients based on location. It also allows operators to control the system including inappropriate content reports, setting up exclusion zones and managing the database and contents servers.
 \item The Database Server runs MySQL and is responsible for storing all persistent post and user information.
@@ -37,11 +37,11 @@ There are several components to Anonymoose:
 \end{itemize}
 \subsection{Broadcast Range}
 The list of possible broadcast ranges is 5mi, 10mi, 25mi, 50mi, 100mi, 250mi and 500mi, with rough km equivalents displayed in fully metric territories (the actual code will use decimal degrees). Sub-national (England, Wales, US states ect), national and supra-national (EU, Commonwealth Realms, North America) capabilities will be implemented for special posts such as events and unavailable for ordinary users.  
-\section{Client Specification}
+\section{Basic Client Specification}
 \subsection{General UI}
 The UI must display the posts on three separate feeds: the local feed, the home feed and the global feed. Each post will display the time passed since it was posted, the distance from the client in the local unit of distance and the number of total votes. Posts will be displayed sequentially (as in like Facebook Yik Yak or Instagram rather than Snapchat or Whisper). All toolbars and UI elements other than the posts themselves will move out of the way when scrolling down, showing a clean interface. A slider will allow the user to select the geographical range of posts they want to see.
 \subsection{General Client Backend}
-The backend must implement the Anonymoose protocol outlined in this document and communicate with the TCP server to load posts. It will be implemented in Java on Android and Swift on iOS.
+The backend must implement the MooseCast protocol outlined in this document and communicate with the TCP server to load posts. It will be implemented in Java on Android and Swift on iOS.
 \subsection{General Theme}
 The stylistic choices will be largely white or transparent with a single, changeable RGB colour for emphasis. A "night mode" will replace white with black for more comfortable viewing at night, and change based on either a toggle or automatically (default behaviour is toggle).
 \subsection{Photo/Video Filters}
@@ -52,7 +52,7 @@ This filter will display a white analogue speedometer dial with the current GPS 
 \subsubsection{Temperature}
 This filter will display the current temperature with a white analogue dial, it will have degrees Celsius on the outer dial and degrees Fahrenheit on the inner dial.
 \subsection{Language Support}
-The initial version of Anonymoose will be written in strict British English, avoiding Americanisms where possible. When ready for release, British English, American English, Spanish, French and German translations will be produced with more languages to follow. Welsh will be considered if the University offers support for Anonymoose. If a translation is unavailable for a locale, the app should default to \textbf{British} English.
+The initial version of MooseCast will be written in strict British English, avoiding Americanisms where possible. When ready for release, British English, American English, Spanish, French and German translations will be produced with more languages to follow. Welsh will be considered if the University offers support for MooseCast. If a translation is unavailable for a locale, the app should default to \textbf{British} English.
 \clearpage 
 \subsection{Units of Measurement}
 The unit of measurement shown on the distance indicator is based on the locale of the device's OS, rather than location.
@@ -104,9 +104,9 @@ Norway & no\\
 \subsubsection{Kilometre}
 In all other locales, the kilometre shall be used for the distance indicator.
 \clearpage
-\section{TCP Server Specification}
+\section{Basic TCP Server Specification}
 \subsection{General}
-The server shall fulfil the client's requests as per the Anonymoose protocol outlined in this document. It will be written in Rust to take advantage of the language's high performance, ease of use and reliability. It will interface with a MySQL database and have the ability to modify this database whether it exists locally or on a separate server. The server will be multithreaded and easily scalable to run on modern cloud-based server solutions. The server will also provide a command-line interface for various administration tasks such as purging an area, creating a new database, creating `autopurge' zones for schools ect., and reporting/banning users.
+The server shall fulfil the client's requests as per the MooseCast protocol outlined in this document. It will be written in Rust to take advantage of the language's high performance, ease of use and reliability. It will interface with a PostgreSQL database and have the ability to modify this database whether it exists locally or on a separate server. The server will be multithreaded and easily scalable to run on modern cloud-based server solutions. The server will also provide a command-line interface for various administration tasks such as purging an area, creating a new database, creating `autopurge' zones for schools ect., and reporting/banning users.
 
 \subsection{Operations}
 In general, the syntax follows UNIX norms. A zero entry for radii generally causes an operation to be global, and the server should warn the operator before any global changes are made.
@@ -144,29 +144,29 @@ In time, a graphical web application to control the TCP server will be developed
 \section{Use Policy}
 The rules of the service
 \begin{itemize}
-\item All content that is not safe for work must be marked as such.
 \item No conduct that threatens the integrity of the service.
 \item No threatening, harassing or unnecessarily aggressive conduct.
+\item No political or religious extremism.
 \item No conduct which could lead to any user's identity being revealed against their will.
-\item No marketing activities without the agreement of Anonymoose staff. 
+\item No marketing activities without the agreement of MooseCast staff. 
 \end{itemize}
 
-The Anonymoose Privacy Policy\\
+The MooseCast Privacy Policy\\
 
-Anonymoose makes no use of personally identifiable data besides usernames. The only data we could provide if compelled or compromised is listed below. We will only release the data to a third party if one of the following conditions are met:
+MooseCast makes no use of personally identifiable data besides usernames. The only data we could provide if compelled or compromised is listed below. We will only release the data to a third party if one of the following conditions are met:
 \begin{itemize}
-\item Anonymoose is compelled to release the data by a court order in the United Kingdom.
-\item Anonymoose staff feel there is a clear and present danger of an Anonymoose user committing a serious criminal offence or placing themselves in mortal danger.
+\item MooseCast is compelled to release the data by a court order in the United Kingdom.
+\item MooseCast staff feel there is a clear and present danger of an MooseCast user committing a serious criminal offence or placing themselves in mortal danger.
 \end{itemize}
 
-At Anonymoose we feel strongly that free speech is an important right, and as a result we refuse to co-operate with any third party seeking to censor, astroturf or otherwise corrupt our service unless ordered to by the courts in the United Kingdom.
+At MooseCast we feel strongly that free speech is an important right, and as a result we refuse to co-operate with any third party seeking to censor, astroturf or otherwise corrupt our service unless ordered to by the courts in the United Kingdom.
 
-In the interests of transparency, the data stored by Anonymoose beside the post content is simply a latitude, longitude, timestamp and a unique post identifier which cannot be tied to a user. Anonymoose relies on a unique user ID to differentiate the original poster and allow chat, these are randomly generated and are not based on your real-life identity. We do not log IP addresses except those blacklisted from our servers. All chat sessions are encrypted to at least 2048 bits.
+In the interests of transparency, the data stored by MooseCast beside the post content is simply a latitude, longitude, Unix timestamp, an optional user ID and a unique post identifier which cannot be tied to a user. MooseCast relies on a unique user ID to differentiate the original poster and allow chat, these are randomly generated and are not based on your real-life identity. We do not log IP addresses except those blacklisted from our servers. While posts can be linked to a user ID, this can only be used to de-anonymise a user if their device falls into untrusted hands, it is assumed that users will take their own measures to secure their device. All chat sessions are encrypted to at least 2048 bits.
 
 
 \clearpage
 \section{Protocol Description}
-Anonymoose uses a custom protocol to transfer post data between client and server. This is to save bandwidth on the limited connections often encountered in the mobile world.
+MooseCast uses a custom protocol to transfer post data between client and server. This is to save bandwidth on the limited connections often encountered in the mobile world.
 \subsection{Initial Connection}
 \begin{table}[h]
 \centering
@@ -196,10 +196,9 @@ Post data is sent between the client app and the server using the following form
 20 & f32 & the longitude of the post location in decimal degrees\\
 24 & i16 & the number of upvotes\\
 26 & i16 & the number of downvotes\\
-34 & i64 & post ID of parent comment (0 if top level)\\
-42 & i64 & unique user ID.\\
-50 & i64 & content server number\\
-58 & u8 & 256 UTF-8 chars \\
+28 & i64 & post ID of parent comment (0 if top level)\\
+36 & i64 & unique user ID.\\
+44 & u8 & 256 UTF-8 chars \\
 \end{tabular}
 \end{table}
 \clearpage
@@ -211,9 +210,9 @@ Post data is sent between the client app and the server using the following form
 \begin{tabular}{ll}
 \textbf{Code} &\textbf{Description}\\
 100 & initial connection\\
-101 & client standing by for IO\\
-102 & client submitting post\\
-103 & client submitting vote\\
+101 & client closing connection\\
+102 & client submitting vote\\
+103 & client submitting post\\
 104 & client requesting deletion\\
 105 & client reporting a post\\
 106 & acknowledge IO\\
@@ -223,11 +222,12 @@ Post data is sent between the client app and the server using the following form
 202 & closing connection\\
 &\\
 300 & unspecified error\\
-301 & connection timeout\\
-302 & post format is corrupt\\
-303 & database error\\
-304 & voting error\\
-305 & user is banned\\
+301 & connection failed\\
+302 & client sent malformed data\\
+303 & server sent malformed data\\
+304 & database error\\
+305 & voting error\\
+306 & user is banned\\
 \end{tabular}
 \end{table}
 
@@ -237,61 +237,18 @@ Post data is sent between the client app and the server using the following form
 \label{my-label}
 \begin{tabular}{ll}
 \textbf{Operation} &\textbf{Description}\\
-upvote & after code 102, a zero byte followed by the post ID\\
-downvote & after code 102, a non-zero byte followed by the post ID\\
-delete & after code 103, the post ID\\
-report & after code 104, the post ID\\
+upvote & UTF-8 102 + UTF-8 0 + UTF-8 post ID\\
+downvote & UTF-8 102 + UTF-8 1 + UTF-8 post ID\\
+add post & UTF-8 103 + serialised post data\\
+delete post & UTF-8 104 + UTF-8 post ID\\
+report post & UTF-8 105 + UTF-8 post ID\\
 \end{tabular}
 \end{table}
 
+\subsubsection{Separator Characters}
+When posts are sent to the client in series, a UTF-8 NULL character will separate the serialised post data. When a post is uploaded to the server from the client, a UTF-8 ETX character will separate the post data from the binary content. As per TCP norms, a newline (\texttt{\\n}) indicates the end of a transmission.
+
 \clearpage
-\subsection{Algorithms for Calculating Distance}
-\subsubsection{Imposing the Five Mile Limit}
-`Under the bonnet', Anonymoose uses decimal degrees of latitude and longitude to calculate the position. The client reports its current position and the server returns the 30 latest posts within five miles. The algorithm for performing this is thus:
-\begin{verbatim}
-/*get the latitude and longitude from the location given by the client*/
-
-float current_latitude = get_GPS_latitude();
-float current_longitude = get_GPS_longitude();
-
-/*degrees of latitude are approx. 69 mi and we want a limit of 5 mi*/ 
-
-float min_latitude = current_latitude - 0.073;
-float max_latitude = current_latitude + 0.073;
-
-/*degrees of longitude are more complex, in order to impose our 5 mi limit we need
-to use some trigonometry and the current latitude. First we get the length of a
-longitudinal degree in miles*/
-
-float miles_in_longitudinal_degree = cos(current_latitude) * 69;
-
-/*now we need to figure out how many longitudinal degrees are in five miles
-at the current latitude*/
-
-float longitudinal_degrees_per_5_miles =  (1 / miles_in_longitudinal_degree) * 5;
-
-min_longitude = current_longitude - longitudinal_degrees_per_5_miles;
-max_longitude = current_longitude + longitudinal_degrees_per_5_miles;
-
-/*assuming the database is correctly sorted in order of post times, we search it for
-posts in the corresponding range*/
-
-int counter = 0;
-struct posts_array[30];
-foreach(posts_in_database) {
-  if(current_post.latitude < max_latitude && currentpost.latitude > min_latitude
-  && post.longitude < max_longitude && post.longitude > min_longitude) {
-    postsArray[counter] = current_post;
-    counter++;
-  }
-  if(counter == 30) {
-    break;
-  }
-}
-
-return posts_array;
-
-\end{verbatim}
 
 
 \end{document}

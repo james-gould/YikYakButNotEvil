@@ -2,7 +2,7 @@
 \contentsline {section}{\numberline {1}Core Features}{2}
 \contentsline {section}{\numberline {2}General Architecture}{3}
 \contentsline {subsection}{\numberline {2.1}Broadcast Range}{3}
-\contentsline {section}{\numberline {3}Client Specification}{3}
+\contentsline {section}{\numberline {3}Basic Client Specification}{3}
 \contentsline {subsection}{\numberline {3.1}General UI}{3}
 \contentsline {subsection}{\numberline {3.2}General Client Backend}{3}
 \contentsline {subsection}{\numberline {3.3}General Theme}{3}
@@ -15,7 +15,7 @@
 \contentsline {subsubsection}{\numberline {3.6.1}Mile}{5}
 \contentsline {subsubsection}{\numberline {3.6.2}Scandinavian Mile}{5}
 \contentsline {subsubsection}{\numberline {3.6.3}Kilometre}{5}
-\contentsline {section}{\numberline {4}TCP Server Specification}{6}
+\contentsline {section}{\numberline {4}Basic TCP Server Specification}{6}
 \contentsline {subsection}{\numberline {4.1}General}{6}
 \contentsline {subsection}{\numberline {4.2}Operations}{6}
 \contentsline {subsubsection}{\numberline {4.2.1}Bans}{6}
@@ -26,5 +26,4 @@
 \contentsline {subsection}{\numberline {6.2}Posts}{8}
 \contentsline {subsection}{\numberline {6.3}Status Codes / AM protocol}{9}
 \contentsline {subsection}{\numberline {6.4}Operation Description}{9}
-\contentsline {subsection}{\numberline {6.5}Algorithms for Calculating Distance}{10}
-\contentsline {subsubsection}{\numberline {6.5.1}Imposing the Five Mile Limit}{10}
+\contentsline {subsubsection}{\numberline {6.4.1}Separator Characters}{9}

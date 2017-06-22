@@ -11,7 +11,7 @@ mod stream;
 use post::*;
 use stream::*;
 
-fn intial_connection(stream: &TcpStream) {
+fn initial_connection(stream: &TcpStream) {
     /* serialise our user data and send it to the server */
     let vector = user_encode(example_user_data());
     send_to_server(&stream, vector);
@@ -40,13 +40,17 @@ fn main()
     for line in in_buffer.lines() {
         let current_line = line.unwrap();
         let status_code = &current_line[0..3];
+        //let prev_code;
 
         println!("Server status code {}", status_code);
 
         match status_code {
+            "202" => {
+                initial_connection(&stream);
+            }
             "201" => {
                 println!("Expecting IO...");
-                intial_connection(&stream);
+                let posts_raw: Vec<u8> = stream::recieve_from_server(&stream);
             }
             "200" => {
                 println!("Operation Successful!");
@@ -55,6 +59,20 @@ fn main()
                 println!("Operation Failed!");
             }
             
+        }
+
+        /* take input from the STDIN to dictate the next action */
+        let mut input = String::new();
+        match stdin().read_line(&mut input) {
+            Ok(n) => {
+                println!("{} bytes read from STDIN", n);
+                stream::send_to_server(&stream, input.into_bytes());
+                continue;
+            }
+            Err(error) => {
+                println!("error: {}", error);
+                break;
+            }
         }
         
     }
@@ -66,7 +84,7 @@ fn main()
 fn example_user_data() -> User
 {
 	let name: String = String::from("aberystwyth_seagull");
-	let example_user = User{
+	let example_user = User {
 		user_name: name,
 		user_id: 0958467049586734098,
 		latitude: 52.41612,
