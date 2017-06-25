@@ -1,3 +1,0 @@
-test:
-  override:
-    - eval "$(curl -sL https://swift.vapor.sh/ci-3.1)"
