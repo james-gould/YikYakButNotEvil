@@ -17,6 +17,8 @@ use rand::Rng;
 mod stream;
 mod post;
 mod database;
+mod client;
+//mod validate;
 
 
 /* 
@@ -28,9 +30,11 @@ fn handle_client(stream: TcpStream)
     println!("Connecting to the post database...");
     let dbase = Connection::connect("postgres://josephthompson:tiger@localhost",
         TlsMode::None).unwrap();
+
+    println!("done!");
     
     /* this holds the user information */
-    let user_data: post::User;
+    let mut user_data: Option<post::User> = None;
     
     /*read the TCP stream into a buffer*/
     let buffer = BufReader::new(&stream);
@@ -45,29 +49,12 @@ fn handle_client(stream: TcpStream)
         match status_code {
             /* initial connection, request user data and send nearby posts */
             "100" => {
-                stream::send_to_client(&stream, 
-                    String::from("202\n").into_bytes());
-                /* get information about the client */
-                let user_data = stream::initial_connection(&stream);
-
-                /* print username and id */
-                println!("{} connected with ID {}", user_data.user_name,
-                    user_data.user_id);
-
-                stream(send_to_client(&stream, "202\n".into_bytes()));
+                user_data = Some(client::get_user_data(&stream));
+                user_data = client::print_user_data(user_data);
             }
             /* client adding a post */
             "102" => {
-                /* accept the raw AM format post data */
-                let raw_post: Vec<u8> = stream::recieve_from_client(&stream);
-
-                /* convert this data into a Post struct */
-                let post: post::Post = post::post_decode(raw_post);
-
-                /* add this post to the database */
-                database::add_post(&dbase, post);
-
-                stream::success(&stream);
+                client::add_post(&stream, &dbase);
             }
             /* client voting on a post */
             "103" => {
@@ -83,25 +70,10 @@ fn handle_client(stream: TcpStream)
 
                 /* update the database */
                 //database::vote(&dbase, mode, 45634745746);
-                println!("debug");
-
             }
             /* client requesting nearby posts */
-            "106" {
-                /* retrieve nearby posts from the database */
-                let posts_buffer: Vec<post::Post> =
-                    database::get_posts(&dbase, user_data);
-
-                /* serialise post into the AM format for transmission */
-                let mut out_buffer: Vec<u8> = Vec::new();
-                for p in posts_buffer {
-                   let raw_data = post::post_encode(p);
-                   /* push each byte of the newly encoded data to the buffer */
-                   for byte in raw_data {
-                        out_buffer.push(byte);
-                   }
-                }
-                stream::send_to_client(&stream, out_buffer);
+            "106" => {
+                user_data = client::req_posts(&stream, &dbase, user_data);
             }
             _ => println!("Client Sent Invalid Status Code..."),
         }

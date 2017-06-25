@@ -39,15 +39,16 @@ pub fn add_post(dbase: &Connection, target: Post)
 	/* the execute function requires references as a parameter so we'll make our
 		zero here */
 	let zero: i16 = 0;
-	dbase.execute("INSERT INTO posts (post_id, timestamp) VALUES ($1, $2, $3,
-						$4, $5, $6, $7, $8, $9)",
+	dbase.execute("INSERT INTO posts (post_id, timestamp, latitude, longitude,
+						upvotes, downvotes, text, parent_id, user_id)
+						VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)",
                  &[&target.post_id, &target.timestamp, &target.latitude,
                  	&target.longitude, &zero, &zero, &target.text,
                  	&target.parent_id, &target.user_id]).unwrap();
 }
 
 /* this retrieves posts from the database */
-pub fn get_posts(dbase: &Connection, user: User) -> Vec<Post>
+pub fn get_posts(dbase: &Connection, user: &User) -> Vec<Post>
 {
 	/* this is fairly straightforward, get range of latitudes within 5mi,
 		this is a simple constant as distances between latitudes are constant */
