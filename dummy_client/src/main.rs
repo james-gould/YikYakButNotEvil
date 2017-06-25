@@ -27,13 +27,8 @@ fn main()
 
     /* the protocol dictates that "100" is sent to the server to initialise the
      * connection */
-    let mut out_buffer = BufWriter::new(&stream);
-    println!("Sending code 100");
-    out_buffer.write_all("100\n".as_bytes());
-    out_buffer.flush();
+    stream::send_100(&stream);
    
-    /* wait until the server responds with "200" (standing by for IO), then send
-     * the user data */
     let in_buffer = BufReader::new(&stream);
 
     println!("Waiting for response...");
@@ -54,6 +49,7 @@ fn main()
             }
             "200" => {
                 println!("Operation Successful!");
+                send_to_server(&stream, post_encode(example_post_data()));
             }
             _ => {
                 println!("Operation Failed!");
@@ -95,3 +91,27 @@ fn example_user_data() -> User
 
 	return example_user;
 }
+
+fn example_post_data() -> Post
+{
+    let text: String = String::from("Hello World");
+    let example_post = Post {
+        post_id: 4570369845609,
+        timestamp: 1498324432,
+        latitude: 52.41612,
+        longitude: -4.083700,
+        upvotes: 78,
+        downvotes: 14,
+        text: text,
+        parent_id: 0,
+        user_id: 0958467049586734098
+    };
+
+    return example_post;
+}
+
+
+
+
+
+
