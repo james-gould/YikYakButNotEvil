@@ -29,8 +29,8 @@ pub fn get_user_data(stream: &TcpStream) -> post::User
 	/* get information about the client */
     let user_data = stream::initial_connection(&stream);
 
-    /* send 202 to tell the client we're ready to send the nearby posts */
-    stream::send_to_client(&stream, String::from("202\n").into_bytes());
+    /* send 202 to tell the client this was successful */
+    stream::ready(&stream);
 
     /* return the user data */
     return user_data;
@@ -38,8 +38,13 @@ pub fn get_user_data(stream: &TcpStream) -> post::User
 
 pub fn add_post(stream: &TcpStream, dbase: &Connection)
 {
+	/* tell the client we're ready for IO */
+	stream::ready(&stream);
+
 	/* accept the raw AM format post data */
     let raw_post: Vec<u8> = stream::recieve_from_client(&stream);
+
+    println!("got {} bytes", raw_post.len());
 
     /* convert this data into a Post struct */
     let post: post::Post = post::post_decode(raw_post);

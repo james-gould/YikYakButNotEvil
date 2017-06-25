@@ -44,7 +44,7 @@ fn handle_client(stream: TcpStream)
         let current_line = line.unwrap();
 
         let status_code = &current_line[0..3];
-        println!("Status Code: {}", status_code);
+        println!("Client Status Code: {}", status_code);
 
         match status_code {
             /* initial connection, request user data and send nearby posts */
@@ -80,11 +80,6 @@ fn handle_client(stream: TcpStream)
     }
 }
 
-fn display(total: u32)
-{
-    print!("There are currently [not implemented] connections, {} total connections since start", total);
-}
-
 fn main()
 {
     println!("___  ___                     _____           _   ");
@@ -99,9 +94,6 @@ fn main()
     println!("Copyright (c) The MooseCast Team 2016-17, all rights reserved.");
     println!("Starting...\n");
 
-    let mut current_users: u32 = 0;
-    let mut total_users: u32 = 0;
-
     /* load configuration */
     println!("Loading configuration...");
     println!("Done!");    
@@ -113,7 +105,6 @@ fn main()
     /* listen for TCP streams and stick each into its own thread */
     for stream in listener.incoming() {
         let stream = stream.unwrap();
-        total_users = total_users + 1;
         thread::spawn(move || {
             println!("Incoming connection...");
             println!("Client information: {:?}", stream.peer_addr());

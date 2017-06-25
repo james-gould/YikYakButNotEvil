@@ -10,12 +10,6 @@ pub fn ready(mut stream: &TcpStream) {
 	writer.write("201\n".as_bytes());
 }
 
-/* tells the client the server is ready to receive the user data */
-pub fn ready_usr(mut stream: &TcpStream) {
-	let mut writer = BufWriter::new(&mut stream);
-	writer.write("202\n".as_bytes());
-}
-
 /* tells the client the server completed the operation successfully */
 pub fn success(mut stream: &TcpStream) {
 	let mut writer = BufWriter::new(&mut stream);
@@ -53,7 +47,7 @@ pub fn recieve_from_client(mut stream: &TcpStream) -> Vec<u8>
 pub fn initial_connection(mut stream: &TcpStream) -> User
 {
 	/* tell the client we're ready for the user data */
-	ready_usr(stream);
+	ready(stream);
 
 	let endchar: u8 = 0x0a;
 
