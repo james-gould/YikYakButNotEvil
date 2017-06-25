@@ -15,9 +15,12 @@ pub fn send_100(mut stream: &TcpStream)
 pub fn send_to_server(mut stream: &TcpStream, payload: Vec<u8>)
 {
 	   let mut writer = BufWriter::new(&mut stream);
+	   let mut counter: i32 = 0;
 	   for i in payload {
 	   		writer.write(&[i]).unwrap();
+	   		counter = counter + 1;
 	   }
+	   println!("wrote {} bytes", counter);
 	   writer.write("\n".as_bytes());
 
 }
