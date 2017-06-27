@@ -28,7 +28,7 @@ fn handle_client(stream: TcpStream)
 {
     /* connect to the Postgres database */
     println!("Connecting to the post database...");
-    let dbase = Connection::connect("postgres://josephthompson:tiger@localhost",
+    let dbase = Connection::connect("postgres://am:5ZtNKNVqv9A3ssSUAJje@am.cbza7ry3tm2m.eu-west-1.rds.amazonaws.com:5432/am",
         TlsMode::None).unwrap();
 
     println!("done!");

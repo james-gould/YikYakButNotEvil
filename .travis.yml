@@ -1,19 +1,16 @@
 sudo: required
 language: rust
-
 services:
-  - docker
-  
+- docker
 rust:
-  - stable
-  - beta
-  - nightly
+- stable
+- beta
+- nightly
 matrix:
   allow_failures:
-    - rust: nightly
+  - rust: nightly
 script:
-  - cargo build --verbose --release
-
+- cargo build --verbose --release
 after_success:
-  - docker build . -t mooseCast/tcp
+- docker build . -t moosecast/tcp
 
