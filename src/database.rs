@@ -47,7 +47,48 @@ pub fn add_post(dbase: &Connection, target: Post)
                  	&target.parent_id, &target.user_id]).unwrap();
 }
 
-/* this retrieves posts from the database */
+/* removes a post from the database */
+pub fn delete_post(dbase: &Connection, post_id: i64)
+{
+	let trn = dbase.transaction().unwrap();
+	
+	/* remove the top-level post */
+	trn.execute("DELETE FROM posts
+					WHERE post_id = $1", &[&post_id]).unwrap();
+	
+	/* remove all the replies as well to keep things tidy */
+	trn.execute("DELETE FROM posts
+					WHERE parent_id = $1", &[&post_id]).unwrap();
+	
+	/* commit the transaction */
+	trn.commit().unwrap();
+}
+
+/* retrieves an individual post from the database */
+pub fn get_post(dbase: &Connection, post_id: i64) -> Post
+{
+	let mut post_buffer: Vec<Post> = Vec::new();
+	for row in &dbase.query("SELECT * FROM posts WHERE post_id = $1",
+							&[&post_id]).unwrap() {
+		let current_post = Post {
+	    	post_id: row.get(0),
+	    	timestamp: row.get(1),
+	    	latitude: row.get(2),
+		 	longitude: row.get(3),
+		 	upvotes: row.get(4),
+		 	downvotes: row.get(5),
+		 	text: row.get(6),
+		 	parent_id: row.get(7),
+		 	user_id: row.get(8), 	
+
+	    };
+	    post_buffer.push(current_post);
+	    break;
+	}
+	return post_buffer.pop().unwrap();
+}
+
+/* this retrieves all nearby posts from the database */
 pub fn get_posts(dbase: &Connection, user: &User) -> Vec<Post>
 {
 	/* this is fairly straightforward, get range of latitudes within 5mi,
@@ -71,6 +112,34 @@ pub fn get_posts(dbase: &Connection, user: &User) -> Vec<Post>
 								$2 AND longitude BETWEEN $3 AND $4",
 							&[&max_latitude, &min_latitude, &max_longitude,
 								&min_longitude]).unwrap() { 
+	    let current_post = Post {
+	    	post_id: row.get(0),
+	    	timestamp: row.get(1),
+	    	latitude: row.get(2),
+		 	longitude: row.get(3),
+		 	upvotes: row.get(4),
+		 	downvotes: row.get(5),
+		 	text: row.get(6),
+		 	parent_id: row.get(7),
+		 	user_id: row.get(8), 	
+
+	    };
+	    
+	    /* put the found posts into the buffer */
+	    posts_buffer.push(current_post);
+	}
+	return posts_buffer;
+}
+
+/* this returns all the replies to a specific post */
+pub fn get_replies(dbase: &Connection, id: i64) -> Vec<Post>
+{
+	/* this vector will store the returned posts */
+	let mut posts_buffer: Vec<Post> = Vec::new();
+
+	/* query the database to find all posts within the range */
+	for row in &dbase.query("SELECT * FROM posts WHERE parent_id = $1",
+							&[&id]).unwrap() { 
 	    let current_post = Post {
 	    	post_id: row.get(0),
 	    	timestamp: row.get(1),

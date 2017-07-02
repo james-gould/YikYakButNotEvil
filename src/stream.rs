@@ -4,6 +4,12 @@ use std::io::*;
 
 use post::*;
 
+/* tells the client the server is terminating the session */
+pub fn terminate(mut stream: &TcpStream) {
+	let mut writer = BufWriter::new(&mut stream);
+	writer.write("203\n".as_bytes());
+}
+
 /* tells the client the server is ready for IO */
 pub fn ready(mut stream: &TcpStream) {
 	let mut writer = BufWriter::new(&mut stream);

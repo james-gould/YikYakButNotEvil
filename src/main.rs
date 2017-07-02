@@ -3,10 +3,10 @@ extern crate byteorder;
 extern crate ansi_term;
 extern crate postgres;
 extern crate rand;
-#[macro_use] extern crate text_io;
+//#[macro_use] extern crate text_io;
 
 use std::io::*;
-use std::net::{TcpListener, TcpStream};
+use std::net::{TcpListener, TcpStream, Shutdown};
 use postgres::{Connection, TlsMode};
 use std::thread;
 use std::time;
@@ -18,8 +18,6 @@ mod stream;
 mod post;
 mod database;
 mod client;
-//mod validate;
-
 
 /* 
  * this function drives client-server interaction, responding to status codes
@@ -28,7 +26,7 @@ fn handle_client(stream: TcpStream)
 {
     /* connect to the Postgres database */
     println!("Connecting to the post database...");
-    let dbase = Connection::connect("postgres://am:5ZtNKNVqv9A3ssSUAJje@am.cbza7ry3tm2m.eu-west-1.rds.amazonaws.com:5432/am",
+    let dbase = Connection::connect("postgres://josephthompson:tiger@localhost",
         TlsMode::None).unwrap();
 
     println!("done!");
@@ -39,7 +37,7 @@ fn handle_client(stream: TcpStream)
     /*read the TCP stream into a buffer*/
     let buffer = BufReader::new(&stream);
 
-    /*get the first four chars as a string slice to determine the next action*/
+    /* This is the main event loop driving the server */
     for line in buffer.lines() {
         let current_line = line.unwrap();
 
@@ -52,24 +50,22 @@ fn handle_client(stream: TcpStream)
                 user_data = Some(client::get_user_data(&stream));
                 user_data = client::print_user_data(user_data);
             }
-            /* client adding a post */
-            "102" => {
-                client::add_post(&stream, &dbase);
+            /* client terminating session */
+            "101" => {
+                stream::terminate(&stream);
+                stream.shutdown(Shutdown::Both).expect("shutdown call failed");
             }
             /* client voting on a post */
+            "102" => {
+                client::vote(&stream, &dbase);
+            }
+            /* client adding a post */
             "103" => {
-                /* split the string up into the mode switch and post ID */
-                //let mode_string = &current_line[4..5];
-                
-                /* remember to strip off the terminator */
-                //let proper_length = current_line.len() - 1;
-                //let post_id_string = &current_line[5..proper_length];
-
-                //let mode = mode_string.parse::<i8>().unwrap();
-                //let post_id = post_id_string.parse::<i64>().unwrap();
-
-                /* update the database */
-                //database::vote(&dbase, mode, 45634745746);
+                client::add_post(&stream, &dbase);
+            }
+            /* client requesting post deletion */
+            "104" => {
+                user_data = client::del_post(&stream, &dbase, user_data);
             }
             /* client requesting nearby posts */
             "106" => {
@@ -96,6 +92,7 @@ fn main()
 
     /* load configuration */
     println!("Loading configuration...");
+    println!("Configuration file corrupted or missing, using defaults");
     println!("Done!");    
 
     let listener = TcpListener::bind("localhost:1337").unwrap();

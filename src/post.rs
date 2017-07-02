@@ -60,8 +60,7 @@ pub fn post_encode(target: Post) -> Vec<u8>
 
 	/* encode the upvotes */
 	let mut upvotes_buffer = [0; 2];
-	BigEndian::write_i16(&mut upvotes_buffer, target.upvotes);
-
+	BigEndian::write_i16(&mut upvotes_buffer, target.upvotes); 
 	/* encode the downvotes */
 	let mut downvotes_buffer = [0; 2];
 	BigEndian::write_i16(&mut downvotes_buffer, target.downvotes);
@@ -77,6 +76,9 @@ pub fn post_encode(target: Post) -> Vec<u8>
 	/* now put all these byte arrays into a single vector for transmission */
 	let mut post_buffer: Vec<u8> = Vec::new();
 
+	/* end the post with ETX */
+	let etx: u8 = 0x03;
+
 	post_buffer.extend_from_slice(&header_buffer);
 	post_buffer.extend_from_slice(&post_id_buffer);
 	post_buffer.extend_from_slice(&timestamp_buffer);
@@ -87,6 +89,7 @@ pub fn post_encode(target: Post) -> Vec<u8>
 	post_buffer.extend_from_slice(&parent_id_buffer);
 	post_buffer.extend_from_slice(&user_id_buffer);
 	post_buffer.extend_from_slice(&text_buffer);
+	post_buffer.push(etx);
 	
 	return post_buffer;
 }
@@ -128,7 +131,13 @@ pub fn post_decode(mut target: Vec<u8>) -> Post
 
 	/* generate a unique post ID */
 	let mut rng = thread_rng();
-	let post_id: i64 = rng.gen();
+	let mut random: i64 = rng.gen();
+	
+	/* make sure the post ID is positive */
+	if random < 0 {
+		random = random * -1;
+	}
+	let post_id: i64 = random;
 
 	let post_buffer = Post {post_id: post_id,
 							timestamp: timestamp,
@@ -189,7 +198,15 @@ pub fn user_decode(mut target: Vec<u8>) -> User
 							connection_type: connection_type,
 							};
 	return user_buffer;
-} 
+}
+
+/* deserialises a post ID, used for voting, deleting, ect */
+pub fn deserialise_post_id(target: Vec<u8>) -> i64
+{
+	let post_id_buffer = &target[..];
+	let post_id = BigEndian::read_i64(post_id_buffer);
+	return post_id;
+}
 
 
 
