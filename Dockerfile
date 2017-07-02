@@ -1,4 +1,3 @@
-FROM alpine
-WORKDIR /am
-ADD /target/release/tcp_server /am/tcp_server
-ENTRYPOINT ["tcp_server"]
+FROM debian
+ADD /target/release/. /am
+CMD ["/am/tcp_server"]
