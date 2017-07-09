@@ -1,0 +1,19 @@
+{
+	"postgres_config" : {
+		"host" : "localhost",
+		"port" : 1432,
+		"username" : "josephthompson",
+		"password" : "tiger"
+	},
+	"tcp_config" : {
+		"host" : "localhost",
+		"port" : 1337,
+		"mode" : 0
+	},
+	"content_config" : {
+		"host" : "localhost",
+		"port" : 1338,
+		"username" : "moosecast",
+		"password" : "tiger"
+	}
+}

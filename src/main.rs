@@ -3,8 +3,10 @@ extern crate byteorder;
 extern crate ansi_term;
 extern crate postgres;
 extern crate rand;
-//#[macro_use] extern crate text_io;
+#[macro_use]
+extern crate json;
 
+use std::env;
 use std::io::*;
 use std::net::{TcpListener, TcpStream, Shutdown};
 use postgres::{Connection, TlsMode};
@@ -12,6 +14,8 @@ use std::thread;
 use std::time;
 use std::str;
 use rand::Rng;
+use std::fs::File;
+use std::io::prelude::*;
 
 /* include the other parts of the server */
 mod stream;
@@ -19,14 +23,49 @@ mod post;
 mod database;
 mod client;
 
+
+/* this function gets the configuration for this instance */
+fn get_config() -> json::JsonValue
+{
+    /* open the config file */
+    let mut config_file = match File::open("config.json") {
+        Err(why) => panic!("Missing configuration file!"),
+        Ok(config_file) => config_file,
+    };
+
+    /* read it to a string */
+    let mut config_string: String = String::new();
+    config_file.read_to_string(&mut config_string).unwrap();
+
+    /* parse the Json */
+    let config = json::parse(&config_string[..]).unwrap();
+
+    return config;
+}
+
 /* 
  * this function drives client-server interaction, responding to status codes
  */
-fn handle_client(stream: TcpStream)
-{
+fn handle_client(stream: TcpStream, config: json::JsonValue)
+{   
+    /* set up database config */
+    let mut config_string = String::from("postgres://");    
+    config_string.push_str(
+        config["postgres_config"]["username"].as_str().unwrap());
+    
+    config_string.push(':');
+    
+    config_string.push_str(
+        config["postgres_config"]["password"].as_str().unwrap());
+    
+    config_string.push('@');
+    
+    config_string.push_str(
+        config["postgres_config"]["host"].as_str().unwrap());
+
     /* connect to the Postgres database */
     println!("Connecting to the post database...");
-    let dbase = Connection::connect("postgres://josephthompson:tiger@localhost",
+    let dbase = Connection::connect(&config_string[..],
         TlsMode::None).unwrap();
 
     println!("done!");
@@ -86,26 +125,45 @@ fn main()
     println!("\\_|  |_/\\___/ \\___/|___/\\___|\\____/\\__,_|___/\\__|");
                                                  
                                                  
-    println!("TCP Server version ALPHA 0.0.3");
+    println!("TCP Server version ALPHA 0.0.4");
     println!("Copyright (c) The MooseCast Team 2016-17, all rights reserved.");
     println!("Starting...\n");
 
     /* load configuration */
     println!("Loading configuration...");
-    println!("Configuration file corrupted or missing, using defaults");
-    println!("Done!");    
+    let config = get_config();
+    println!("Success!");
+    
+    
+    /* handle shell arguments
+    for argument in env::args() {
+        match argument {
+            /* this is the configuration folder */
+            "-c" => {
+                config = config::read_config(argument.next());
+            }
+            _ => continue,
+        }
+    } */
 
+    /* start listening for clients */
     let listener = TcpListener::bind("localhost:1337").unwrap();
 
     println!("TCP listener local information: {:?}\n", listener.local_addr());
 
     /* listen for TCP streams and stick each into its own thread */
     for stream in listener.incoming() {
+        
+        /* we want to throw our TCP connection around */
         let stream = stream.unwrap();
+
+        /* since we're moving into a new thread, clone the config */
+        let cloned_config = config.clone();
+        
         thread::spawn(move || {
             println!("Incoming connection...");
             println!("Client information: {:?}", stream.peer_addr());
-            handle_client(stream);
+            handle_client(stream, cloned_config);
         });
     }
 }

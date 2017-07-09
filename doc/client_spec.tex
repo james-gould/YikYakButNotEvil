@@ -1,0 +1,128 @@
+\documentclass[12pt, a4paper]{article}
+\usepackage{graphicx,color}
+\usepackage[margin=0.5in]{geometry}
+\usepackage{graphicx}
+\usepackage[british]{babel}
+\usepackage[toc,page]{appendix}
+\usepackage{mathtools}
+\usepackage{amsfonts}
+\usepackage{listings}
+\graphicspath{ {img/} }
+\DeclareMathSizes{20}{20}{20}{20}
+
+\begin{document}
+
+\title{\textbf{MooseCast Client Specification \\ version 0.0.1}}
+\author{MooseCast Team \\ \textit{Aaron Walker, Alex Toop and Joseph Thompson} \\ \\ \textcolor{red}{PRIVATE AND CONFIDENTIAL}}
+\date{July 2017}
+\maketitle
+
+\tableofcontents
+\clearpage
+
+\section{Purpose of this Document}
+The purpose of this document is to provide (in addition to the \textit{MooseCast Protocol Specification}, the \textit{MooseCast Content Server Specification} and the \textit{MooseCast TCP Server Specification}) a complete set of requirements to which the MooseCast client application is to be developed against.
+
+\section{Functional Requirements}
+\subsection{Data Transmission}
+\begin{itemize}
+\item F.R. 1.0: The client must implement the MooseCast transmission protocol outlined in the \textit{Protocol Specification} document completely and faithfully.
+\item F.R. 1.1: The client must validate all metadata relating to users, posts and livestreams before it is sent to the server.
+\item F.R. 1.2: The client must send and receive the correct object data related to submissions from the content server.
+\item F.R. 1.3: The client must not expose any information that may uniquely identify a user or their device.
+\item F.R. 1.4: The client must encrypt any connection it makes outside of the device it is running on to a reasonable standard.
+\item F.R. 1.5: The client must gracefully disconnect from the TCP and content servers when the session ends.
+\end{itemize}
+\subsection{Core Functionality}
+\begin{itemize}
+\item F.R. 2.0: The client must display a continuous feed of nearby posts and their associated rich content.
+\item F.R. 2.1: The client must include an option to sort nearby posts by popularity or time.
+\item F.R. 2.2: The client must have a secondary feed in which nearby posts are filtered by hashtag and ordered by the number of nearby posts with a hashtag.
+\item F.R. 2.3: The client must be able to vote exactly once on each post.
+\item F.R. 2.4: The client must be able to delete any post originating from the same instance.
+\item F.R. 2.5: The client must be able to report any post visible to the current user for rule violations.
+\item F.R. 2.6: The client must transmit the user's ID and location in the manner specified in the \textit{Protocol Specification} at the start of all sessions.
+\item F.R. 2.7: The user must be able to set the current location in the settings menu as their `Herd'. When the user selects the `Herd' feed the client must send this location to the server and behave as though the client was located there, rather than the present GPS location. 
+\end{itemize}
+\subsection{Bandwidth Constraints}
+\begin{itemize}
+\item F.R. 3.0: The client must report the type of its connection at the start of the session in the manner specified in the \textit{Protocol Specification}.
+\item F.R. 3.1: The client must adapt the requests it makes based on this connection type (see \textit{Appendix A} for a complete description).
+\item F.R. 3.2: The client must perform the appropriate compression and resizing operations on all submitted rich content to fit the contraints in the \textit{Content Server Specification}.
+\end{itemize}
+\clearpage
+
+\section{U.I. Requirements}
+\subsection{Internationalisation}
+\begin{itemize}
+\item U.I.R. 1.0: The primary language of the client will be strict British English, avoiding Americanisms where possible. As the company expands, American English, Spanish, French and German shall be added as appropriate. If Aberystwyth University offers support Welsh will be considered. If a translation is unavailable for a particular locale, the app should default to \textbf{British} English.
+\item U.I.R. 1.1: The client must display all geographical distances as appropriate in miles for distances above $\frac{1}{2}$ mile and yards for distances below for British, American and the other locales in \textit{Appendix B}, other locales must display distances in kilometres for distances above 1 kilometre and metres for distances below.
+\end{itemize}
+
+\subsection{General U.I. Requirements}
+\begin{itemize}
+\item U.I.R. 2.0: The client will display on each post an upvote button, a downvote button, the number of replies, the time since the post was originally submitted and the distance between the user and the location in which the post was originally submitted in the appropriate unit (described in U.I.R 1.1).
+\item U.I.R 2.1: Replies to a post must display an upvote button, a downvote button, the time since the reply was posted and a randomised icon indicating the user who made the reply. 
+\item U.I.R 2.2: Pressing on the replies button must cause the client to fetch and display all replies and present an option for the user to add a reply.
+\item U.I.R. 2.3: The client must display a bar at the top displaying the user's current karma ($\sum upvotes - \sum downvotes$), the name MooseCast, the name of the nearest settlement and a settings button indicated by a cog.
+\item U.I.R 2.4: The client must display a bar at the bottom with a large button in the centre for adding a post, to the left two buttons (one for the nearby posts, one for their 'herd`) and to the right a button for the channels feed.
+\item U.I.R. 2.5: As the client scrolls down, both bars must smoothly scroll off the edge of the screen. When the client scrolls up, the bars must smoothly scroll back to their original locations. 
+\end{itemize}
+
+\begin{appendices}
+\section{Connection Types and Required Behaviour}
+\begin{table}[ht]
+\centering
+\label{my-label}
+\begin{tabular}{lll}
+\textbf{Connection Type} & \textbf{INIT code} & \textbf{Behaviour}\\
+Wifi & 5 & Load all posts and rich content immediately, stream send/rec.\\
+4G & 4 & Load all posts and rich content immediately, stream send/rec.\\
+3G & 3 & Load all posts immediately, load rich content on touch, stream rec.\\
+2G & 2 & Load text only immediately, load images only on touch, no streaming.\\
+unknown & 1 & Assume worst case scenario and use 2G rules.\\
+No connection & 0 & throw error message and exit on acknowledgement.\\
+\end{tabular}
+\end{table}
+\section{Territories in which Miles and Yards are to be used as Distance Units}
+\begin{table}[ht]
+\centering
+\label{my-label}
+\begin{tabular}{ll}
+\textbf{Territory} & \textbf{Code}\\
+United Kingdom & gb\\
+United States & us\\
+Liberia & lr\\
+Burma & mm\\
+American Samoa & as\\
+Ascension Island & ac\\
+Bahamas & bs\\
+Belize & bz\\
+British Virgin Islands & vg\\
+Cayman Islands & ky\\
+Dominica & dm\\
+Falkland Islands & fk\\
+Grenada & gd\\
+Guam & gu\\
+The N. Mariana Islands & mp\\
+Samoa & ws\\
+St. Lucia & lc\\
+St. Vincent and The Grenadines & vc\\
+St. Helena & sh\\
+St. Kitts and Nevis & kn\\
+Turks and Caicos Islands & tc\\
+U.S. Virgin Islands & vi\\
+\end{tabular}
+\end{table}
+\end{appendices}
+
+\end{document}
+
+
+
+
+
+
+
+
+

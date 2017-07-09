@@ -1,0 +1,12 @@
+\select@language {british}
+\contentsline {section}{\numberline {1}Purpose of this Document}{2}
+\contentsline {section}{\numberline {2}Functional Requirements}{2}
+\contentsline {subsection}{\numberline {2.1}Data Transmission}{2}
+\contentsline {subsection}{\numberline {2.2}Core Functionality}{2}
+\contentsline {subsection}{\numberline {2.3}Bandwidth Constraints}{3}
+\contentsline {section}{\numberline {3}U.I. Requirements}{4}
+\contentsline {subsection}{\numberline {3.1}Internationalisation}{4}
+\contentsline {subsection}{\numberline {3.2}General U.I. Requirements}{4}
+\contentsline {section}{Appendices}{4}
+\contentsline {section}{\numberline {A}Connection Types and Required Behaviour}{4}
+\contentsline {section}{\numberline {B}Territories in which Miles and Yards are to be used as Distance Units}{5}

@@ -1,0 +1,19 @@
+# CONFIGURATION FILE FOR MOOSECAST TCP SERVER
+
+postgres:
+  host: localhost
+  port: 5432
+  username: josephthompson
+  password: tiger
+
+content_server:
+  host: localhost
+  port: 1338
+  username: moosecast
+  password: bollocks
+
+tcp:
+  listen_on: localhost
+  port: 1337
+  mode: 0
+  
