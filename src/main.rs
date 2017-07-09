@@ -3,7 +3,6 @@ extern crate byteorder;
 extern crate ansi_term;
 extern crate postgres;
 extern crate rand;
-#[macro_use]
 extern crate json;
 
 use std::env;
@@ -11,11 +10,8 @@ use std::io::*;
 use std::net::{TcpListener, TcpStream, Shutdown};
 use postgres::{Connection, TlsMode};
 use std::thread;
-use std::time;
 use std::str;
-use rand::Rng;
 use std::fs::File;
-use std::io::prelude::*;
 
 /* include the other parts of the server */
 mod stream;
@@ -29,7 +25,7 @@ fn get_config() -> json::JsonValue
 {
     /* open the config file */
     let mut config_file = match File::open("config.json") {
-        Err(why) => panic!("Missing configuration file!"),
+        Err(why) => panic!("Config file load failed with error {}", why),
         Ok(config_file) => config_file,
     };
 

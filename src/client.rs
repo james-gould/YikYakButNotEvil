@@ -1,7 +1,6 @@
 /* functions for interacting directly with the client */
-use std::thread;
-use std::net::{Shutdown, TcpStream};
-use postgres::{Connection, TlsMode};
+use std::net::TcpStream;
+use postgres::Connection;
 
 use post;
 use stream;
@@ -17,7 +16,7 @@ pub fn print_user_data(user_data: Option<post::User>) -> Option<post::User>
 		    println!("User {} connected with ID {}", u.user_name, u.user_id);
 
 		    /* pass the user_data struct back to the calling function */
-		    let mut z: Option<post::User> = Some(u);
+		    let z: Option<post::User> = Some(u);
 			return z;
 		}
 	}
@@ -93,7 +92,7 @@ pub fn del_post(stream: &TcpStream, dbase: &Connection,
 				stream::success(&stream);
 
 				/* pass the user_data struct back to the calling function */
-		    	let mut z: Option<post::User> = Some(u);
+		    	let z: Option<post::User> = Some(u);
 				return z;
 			}
 			else {
@@ -130,8 +129,7 @@ pub fn req_posts(stream: &TcpStream, dbase: &Connection,
 		    stream::send_to_client(&stream, out_buffer);
 		    
 		    /* pass the user_data struct back to the calling function */
-		    let mut z: Option<post::User> = None;
-		    z = Some(u);
+		    let z: Option<post::User> = Some(u);
 			return z;
 		}
 	}

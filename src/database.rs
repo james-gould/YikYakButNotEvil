@@ -1,11 +1,11 @@
 /* provide the connection to the postgres database and utilities */
-use postgres::{Connection, TlsMode};
+use postgres::Connection;
 use post::Post;
 use post::User;
 
 /* this function builds a new set of tables from scratch, for initialising new
  * instances and starting from scratch when shit hits the fan.
- */
+ *
 pub fn init_tables(dbase: &Connection)
 {
 	/* this perfectly maps onto our post struct, how convenient is that? */
@@ -32,6 +32,7 @@ pub fn init_tables(dbase: &Connection)
                   )", &[]).unwrap();
 
 }
+*/
 
 /* this adds a post into the database */
 pub fn add_post(dbase: &Connection, target: Post)

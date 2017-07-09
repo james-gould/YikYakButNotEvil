@@ -7,29 +7,41 @@ use post::*;
 /* tells the client the server is terminating the session */
 pub fn terminate(mut stream: &TcpStream) {
 	let mut writer = BufWriter::new(&mut stream);
-	writer.write("203\n".as_bytes());
+	match writer.write("203\n".as_bytes()) {
+		Ok(_) => return (),
+		Err(e) => println!("Termination failed with error {}", e),
+	}
 }
 
 /* tells the client the server is ready for IO */
 pub fn ready(mut stream: &TcpStream) {
 	let mut writer = BufWriter::new(&mut stream);
-	writer.write("201\n".as_bytes());
+	match writer.write("201\n".as_bytes()) {
+		Ok(_) => return (),
+		Err(e) => println!("Ready status update failed with error {}", e),
+	}
 }
 
 /* tells the client the server completed the operation successfully */
 pub fn success(mut stream: &TcpStream) {
 	let mut writer = BufWriter::new(&mut stream);
-	writer.write("200\n".as_bytes());
+	match writer.write("200\n".as_bytes()) {
+		Ok(_) => return (),
+		Err(e) => println!("Success status updated failed with error {}", e),
+	}
 }
 
 /* sends a vector of bytes to the client */
 pub fn send_to_client(mut stream: &TcpStream, payload: Vec<u8>)
 {
-	   let mut writer = BufWriter::new(&mut stream);
-	   for i in payload {
+		let mut writer = BufWriter::new(&mut stream);
+		for i in payload {
 	   		writer.write(&[i]).unwrap();
-	   }
-	   writer.write("\n".as_bytes());
+		}
+		match writer.write("\n".as_bytes()) {
+	   		Ok(_) => return (),
+	   		Err(e) => println!("Write failed with error {}", e),
+		}
 
 }
 
