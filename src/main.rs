@@ -1,11 +1,10 @@
 /* set up our dependencies of which there are many */
 extern crate byteorder;
-extern crate ansi_term;
 extern crate postgres;
 extern crate rand;
 extern crate json;
 
-use std::env;
+//use std::env;
 use std::io::*;
 use std::net::{TcpListener, TcpStream, Shutdown};
 use postgres::{Connection, TlsMode};
@@ -61,11 +60,22 @@ fn handle_client(stream: TcpStream, config: json::JsonValue)
 
     /* connect to the Postgres database */
     println!("Connecting to the post database...");
-    let dbase = Connection::connect(&config_string[..],
-        TlsMode::None).unwrap();
-
-    println!("done!");
     
+    let dbase: Connection;
+
+    match Connection::connect(&config_string[..],
+        TlsMode::None) {
+        Ok(n) => {
+            println!("Connection okay!");
+            dbase = n;
+        }
+        Err(e) => {
+            println!("Error connecting to database, {}", e);
+            stream::error(&stream, 304);
+            panic!("Don't actually panic, sort this out later.");
+        }
+    }
+
     /* this holds the user information */
     let mut user_data: Option<post::User> = None;
     
@@ -105,6 +115,10 @@ fn handle_client(stream: TcpStream, config: json::JsonValue)
             /* client requesting nearby posts */
             "106" => {
                 user_data = client::req_posts(&stream, &dbase, user_data);
+                stream::success(&stream);
+            }
+            "107" => {
+                client::get_replies(&stream, &dbase);
             }
             _ => println!("Client Sent Invalid Status Code..."),
         }
@@ -121,8 +135,8 @@ fn main()
     println!("\\_|  |_/\\___/ \\___/|___/\\___|\\____/\\__,_|___/\\__|");
                                                  
                                                  
-    println!("TCP Server version ALPHA 0.0.4");
-    println!("Copyright (c) The MooseCast Team 2016-17, all rights reserved.");
+    println!("TCP Server version ALPHA 0.1.0");
+    println!("Copyright (c) The MooseCast Team 2017, all rights reserved.");
     println!("Starting...\n");
 
     /* load configuration */

@@ -1,5 +1,8 @@
 /* functions for encoding, decoding and general post IO */
 use byteorder::{BigEndian, ByteOrder};
+use std::error::Error;
+use std::io;
+use std::fmt;
 use rand::*;
 
 
@@ -8,6 +11,7 @@ use rand::*;
  * it is an easy intermediate form between the postgres database and the machine
  * -readable Anonymoose transmission format.
  */
+#[derive(Debug)]
 pub struct Post
 {
  	pub post_id: i64, /* unique post ID */
@@ -21,6 +25,36 @@ pub struct Post
  	pub user_id: i64, /* unique user ID */ 	
 }
 
+/* custom error handling for Post structs */
+#[derive(Debug)]
+pub enum PostError
+{
+	MalformedMetadataError,
+	InvalidTimeError,
+}
+
+impl fmt::Display for PostError
+{
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        match *self {
+            PostError::MalformedMetadataError => write!(f, "User sent malformed\
+            											 	  metadata!"),
+            PostError::InvalidTimeError => write!(f, "User sent post with\
+            											 invalid time!"),
+        }
+    }
+}
+
+impl Error for PostError
+{
+    fn description(&self) -> &str {
+        match *self {
+            PostError::MalformedMetadataError => "Malformed Metadata!",
+            PostError::InvalidTimeError => "Invalid Time!",
+        }
+    }
+}
+
 /* this struct describes a connected user */
 pub struct User
 {
@@ -32,12 +66,55 @@ pub struct User
 	pub connection_type: u8 /* connection type (2G, 3G, 4G, wifi) */ 
 }
 
+/* custom error handling for Post structs */
+#[derive(Debug)]
+pub enum UserDataError
+{
+	MalformedMetadataError,
+	InvalidLocationError,
+}
+
+impl fmt::Display for UserDataError
+{
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        match *self {
+            UserDataError::MalformedMetadataError => write!(f, "User sent\
+            											 malformed metadata!"),
+            UserDataError::InvalidLocationError => write!(f, "User sent post\
+            										with invalid location!"),
+        }
+    }
+}
+
+impl Error for UserDataError
+{
+    fn description(&self) -> &str {
+        match *self {
+            UserDataError::MalformedMetadataError => "Malformed Metadata!",
+            UserDataError::InvalidLocationError => "Invalid Location!",
+        }
+    }
+}
+
 /* encodes post structs into the Anonymoose transmission format */
 pub fn post_encode(target: Post) -> Vec<u8>
 {
 	/* encode the text */
-	let raw_text = target.text;
-	let text_buffer = raw_text.as_bytes();
+	let mut raw_text = target.text;
+	
+	/* posts which are received from the client (IE all of them) acquire a
+	 * newline character when they're fed through the stream IO functions.
+	 * we DO NOT WANT this as it'll make anything reading it assume the stream
+	 * has finished so strip that little bastard out before it can ruin our day
+	 */
+	 
+	 let bastard_newline = raw_text.pop().unwrap();
+	 
+	 /* P.S. if we got to this point and an unwrap call will break it then God
+	  * help us, because then the TCP server is fucked and so is our launch.
+	  */
+	 
+	 let text_buffer = raw_text.as_bytes();
 
 	/* encode the post header */
 	let header_buffer = "POST".as_bytes();
@@ -96,9 +173,11 @@ pub fn post_encode(target: Post) -> Vec<u8>
 
 /* splits up the incoming byte stream and returns a Post struct based on the
  * data it contains */
-pub fn post_decode(mut target: Vec<u8>) -> Post
+pub fn post_decode(mut target: Vec<u8>) -> Result<Post, PostError>
 {
-	println!("{}", target.len());
+	if target.len() < 44 {
+		return Err(PostError::MalformedMetadataError);
+	}
 
 	/* decode the text */
 	let text_buffer = target.split_off(44);
@@ -151,20 +230,24 @@ pub fn post_decode(mut target: Vec<u8>) -> Post
 							}; 
 	
 
-	return post_buffer;
+	return Ok(post_buffer);
 
 }
 
 /* decode incoming user data and return a User struct */
-pub fn user_decode(mut target: Vec<u8>) -> User
+pub fn user_decode(mut target: Vec<u8>) -> Result<User, UserDataError>
 {
 	if target.len() < 22 {
-		panic!("Malformed user data!");
+		return Err(UserDataError::MalformedMetadataError);
 	}
 
 	/* decode the username */
 	let user_name_vector = target.split_off(23);
-	let user_name = String::from_utf8(user_name_vector).unwrap();
+	let user_name: String;
+	match String::from_utf8(user_name_vector) {
+		Ok(s) => user_name = s,
+		Err(e) => return Err(UserDataError::MalformedMetadataError),
+	}
 
 	/* decode the connection type */
 	let connection_type_vector = target.split_off(22);
@@ -197,7 +280,7 @@ pub fn user_decode(mut target: Vec<u8>) -> User
 							range: range,
 							connection_type: connection_type,
 							};
-	return user_buffer;
+	return Ok(user_buffer);
 }
 
 /* deserialises a post ID, used for voting, deleting, ect */
@@ -208,7 +291,30 @@ pub fn deserialise_post_id(target: Vec<u8>) -> i64
 	return post_id;
 }
 
-
+/* ugly af debug function, change this to an impl asap */
+pub fn print_post(target: Post) -> Post
+{
+    println!(" Post Dump:
+    			Post ID: {}\n
+                Timestamp: {}\n
+                Latitude: {}\n
+                Longitude: {}\n
+                Upvotes: {}\n
+                Downvotes: {}\n
+                Text: {}\n
+                Parent ID: {}\n
+                User ID: {}",
+                target.post_id,
+                target.timestamp,
+                target.latitude,
+                target.longitude,
+                target.upvotes,
+                target.downvotes,
+                target.text,
+                target.parent_id,
+                target.user_id);
+    return target;
+}
 
 
 

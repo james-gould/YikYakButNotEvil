@@ -31,22 +31,33 @@ pub fn success(mut stream: &TcpStream) {
 	}
 }
 
+/* sends an error code to the client */
+pub fn error(mut stream: &TcpStream, code: i16)
+{
+	let code_vec = code.to_string().into_bytes();
+	send_to_client(&stream, code_vec);
+	
+}
+
 /* sends a vector of bytes to the client */
 pub fn send_to_client(mut stream: &TcpStream, payload: Vec<u8>)
 {
 		let mut writer = BufWriter::new(&mut stream);
 		for i in payload {
-	   		writer.write(&[i]).unwrap();
+	   		match writer.write(&[i]) {
+	   			Ok(_) => (),
+	   			Err(e) => println!("Write failed with error {}", e),
+			}
 		}
 		match writer.write("\n".as_bytes()) {
-	   		Ok(_) => return (),
+	   		Ok(_) => (),
 	   		Err(e) => println!("Write failed with error {}", e),
 		}
 
 }
 
 /* receives a vector of bytes from the client */
-pub fn recieve_from_client(mut stream: &TcpStream) -> Vec<u8>
+pub fn recieve_from_client(mut stream: &TcpStream) -> Option<Vec<u8>>
 {
 	/* tell the client we're ready for IO */
 	ready(stream);
@@ -56,13 +67,36 @@ pub fn recieve_from_client(mut stream: &TcpStream) -> Vec<u8>
 	/* read the stream into a buffer */
 	let mut reader = BufReader::new(&mut stream);
 	let mut in_buffer: Vec<u8> = Vec::new();
-	reader.read_until(endchar, &mut in_buffer);
-	 	
-	return in_buffer;
+	match reader.read_until(endchar, &mut in_buffer) {
+		Ok(_) => return Some(in_buffer),
+		Err(e) => {
+			println!("Read failed with error {}.", e);
+			return None;
+		}
+	}
+
+}
+
+/* same as the above, but without sending the ready */
+pub fn recieve_from_client_quiet(mut stream: &TcpStream) -> Option<Vec<u8>>
+{
+	let endchar: u8 = 0x0a;
+
+	/* read the stream into a buffer */
+	let mut reader = BufReader::new(&mut stream);
+	let mut in_buffer: Vec<u8> = Vec::new();
+	match reader.read_until(endchar, &mut in_buffer) {
+		Ok(_) => return Some(in_buffer),
+		Err(e) => {
+			println!("Read failed with error {}.", e);
+			return None;
+		}
+	}
+
 }
 
 /* gets information about the user for further processing */
-pub fn initial_connection(mut stream: &TcpStream) -> User
+pub fn initial_connection(mut stream: &TcpStream) -> Option<User>
 {
 	/* tell the client we're ready for the user data */
 	ready(stream);
@@ -72,9 +106,21 @@ pub fn initial_connection(mut stream: &TcpStream) -> User
 	/* read the stream into a buffer */
 	let mut reader = BufReader::new(&mut stream);
 	let mut in_buffer: Vec<u8> = Vec::new();
-	reader.read_until(endchar, &mut in_buffer);
-
-	return user_decode(in_buffer);
+	match reader.read_until(endchar, &mut in_buffer) {
+		Ok(_) => println!("\n"),
+		Err(e) => {
+			println!("Read failed with error {}.", e);
+			return None;
+		}
+	}
+	match user_decode(in_buffer) {
+		Ok(u) => return Some(u),
+		Err(e) => { 
+			println!("Error parsing user data, {}", e);
+			return None;
+		}
+	}
+	
 }
 
 
