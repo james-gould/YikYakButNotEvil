@@ -156,8 +156,19 @@ fn main()
         }
     } */
 
+    /* configure the listener */
+    let mut config_string = String::new();
+    
+    config_string.push_str(
+        config["tcp_config"]["host"].as_str().unwrap());
+
+    config_string.push(':');
+
+    config_string.push_str(
+        &config["tcp_config"]["port"].as_i16().unwrap().to_string()[..]);
+
     /* start listening for clients */
-    let listener = TcpListener::bind("localhost:1337").unwrap();
+    let listener = TcpListener::bind(&config_string[..]).unwrap();
 
     println!("TCP listener local information: {:?}\n", listener.local_addr());
 
