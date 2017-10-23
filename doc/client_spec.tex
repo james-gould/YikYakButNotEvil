@@ -12,8 +12,8 @@
 
 \begin{document}
 
-\title{\textbf{MooseCast Client Specification \\ version 0.0.1}}
-\author{MooseCast Team \\ \textit{Aaron Walker, Alex Toop and Joseph Thompson} \\ \\ \textcolor{red}{PRIVATE AND CONFIDENTIAL}}
+\title{\textbf{12hours Client Specification \\ version 0.0.1}}
+\author{12hours Team \\ \textit{Aaron Walker, Alex Toop and Joseph Thompson} \\ \\ \textcolor{red}{PRIVATE AND CONFIDENTIAL}}
 \date{July 2017}
 \maketitle
 
@@ -21,27 +21,27 @@
 \clearpage
 
 \section{Purpose of this Document}
-The purpose of this document is to provide (in addition to the \textit{MooseCast Protocol Specification}, the \textit{MooseCast Content Server Specification} and the \textit{MooseCast TCP Server Specification}) a complete set of requirements to which the MooseCast client application is to be developed against.
+The purpose of this document is to provide (in addition to the \textit{12hours Protocol Specification}, the \textit{12hours Content Server Specification} and the \textit{12hours TCP Server Specification}) a complete set of requirements to which the 12hours client application is to be developed against.
 
 \section{Functional Requirements}
 \subsection{Data Transmission}
 \begin{itemize}
-\item F.R. 1.0: The client must implement the MooseCast transmission protocol outlined in the \textit{Protocol Specification} document completely and faithfully.
+\item F.R. 1.0: The client must implement the 12hours transmission protocol outlined in the \textit{Protocol Specification} document completely and faithfully.
 \item F.R. 1.1: The client must validate all metadata relating to users, posts and livestreams before it is sent to the server.
-\item F.R. 1.2: The client must send and receive the correct object data related to submissions from the content server.
-\item F.R. 1.3: The client must not expose any information that may uniquely identify a user or their device.
-\item F.R. 1.4: The client must encrypt any connection it makes outside of the device it is running on to a reasonable standard.
-\item F.R. 1.5: The client must gracefully disconnect from the TCP and content servers when the session ends.
+\item F.R. 1.2: The client must retrieve the correct rich content (images, videos, ect) associated with a post from the content server.
+\item F.R. 1.3: The client must not expose any information that may uniquely identify a user or their device, I.E. the user ID or location data must not be revealed directly to the user or sent unencrypted by any means.
+\item F.R. 1.4: The client must connect to the TCP server using 2048-bit SSL.
+\item F.R. 1.5: The client must gracefully disconnect from the TCP and content servers when the session ends, if this is not possible the client will continue attempting for thirty seconds before timing out.
 \end{itemize}
 \subsection{Core Functionality}
 \begin{itemize}
-\item F.R. 2.0: The client must display a continuous feed of nearby posts and their associated rich content.
-\item F.R. 2.1: The client must include an option to sort nearby posts by popularity or time.
+\item F.R. 2.0: The client must display a continuous feed of nearby posts and their associated rich content, as determined by the data sent from the TCP server.
+\item F.R. 2.1: The client must include an option to sort nearby posts by popularity or time, the sorting operation must be performed client-side.
 \item F.R. 2.2: The client must have a secondary feed in which nearby posts are filtered by hashtag and ordered by the number of nearby posts with a hashtag.
-\item F.R. 2.3: The client must be able to vote exactly once on each post.
-\item F.R. 2.4: The client must be able to delete any post originating from the same instance.
-\item F.R. 2.5: The client must be able to report any post visible to the current user for rule violations.
-\item F.R. 2.6: The client must transmit the user's ID and location in the manner specified in the \textit{Protocol Specification} at the start of all sessions.
+\item F.R. 2.3: The client must be able to vote exactly once on each post. It must be possible for this vote to be retracted and re-made.
+\item F.R. 2.4: The client must be able to delete any post originating from the same client instance, this should remove the entire comment chain.
+\item F.R. 2.5: The client must be able to report any post visible to the current user for rule violations. This should be done by a report button on the individual post page.
+\item F.R. 2.6: The client must transmit the user's ID and location in the manner specified in the \textit{Protocol Specification} at the start of all sessions. This user ID should be a 64-bit number generated the first time the client runs and is stored henceforth in that instance's local persistent data (this will be platform specific).
 \item F.R. 2.7: The user must be able to set the current location in the settings menu as their `Herd'. When the user selects the `Herd' feed the client must send this location to the server and behave as though the client was located there, rather than the present GPS location. 
 \end{itemize}
 \subsection{Bandwidth Constraints}
@@ -56,7 +56,7 @@ The purpose of this document is to provide (in addition to the \textit{MooseCast
 \subsection{Internationalisation}
 \begin{itemize}
 \item U.I.R. 1.0: The primary language of the client will be strict British English, avoiding Americanisms where possible. As the company expands, American English, Spanish, French and German shall be added as appropriate. If Aberystwyth University offers support Welsh will be considered. If a translation is unavailable for a particular locale, the app should default to \textbf{British} English.
-\item U.I.R. 1.1: The client must display all geographical distances as appropriate in miles for distances above $\frac{1}{2}$ mile and yards for distances below for British, American and the other locales in \textit{Appendix B}, other locales must display distances in kilometres for distances above 1 kilometre and metres for distances below.
+\item U.I.R. 1.1: The client must display all geographical distances as appropriate in miles for British, American and the other locales in \textit{Appendix B}, other locales must display distances in kilometres. This will be calculated on-the-fly based on the GPS and post coordinates and calculated in miles. Kilometre-based locales can simply multiply this value by 1.61.
 \end{itemize}
 
 \subsection{General U.I. Requirements}
@@ -64,7 +64,7 @@ The purpose of this document is to provide (in addition to the \textit{MooseCast
 \item U.I.R. 2.0: The client will display on each post an upvote button, a downvote button, the number of replies, the time since the post was originally submitted and the distance between the user and the location in which the post was originally submitted in the appropriate unit (described in U.I.R 1.1).
 \item U.I.R 2.1: Replies to a post must display an upvote button, a downvote button, the time since the reply was posted and a randomised icon indicating the user who made the reply. 
 \item U.I.R 2.2: Pressing on the replies button must cause the client to fetch and display all replies and present an option for the user to add a reply.
-\item U.I.R. 2.3: The client must display a bar at the top displaying the user's current karma ($\sum upvotes - \sum downvotes$), the name MooseCast, the name of the nearest settlement and a settings button indicated by a cog.
+\item U.I.R. 2.3: The client must display a bar at the top displaying the user's current karma ($\sum upvotes - \sum downvotes$), the name 12hours, the name of the nearest settlement and a settings button indicated by a cog.
 \item U.I.R 2.4: The client must display a bar at the bottom with a large button in the centre for adding a post, to the left two buttons (one for the nearby posts, one for their 'herd`) and to the right a button for the channels feed.
 \item U.I.R. 2.5: As the client scrolls down, both bars must smoothly scroll off the edge of the screen. When the client scrolls up, the bars must smoothly scroll back to their original locations. 
 \end{itemize}
@@ -76,15 +76,13 @@ The purpose of this document is to provide (in addition to the \textit{MooseCast
 \label{my-label}
 \begin{tabular}{lll}
 \textbf{Connection Type} & \textbf{INIT code} & \textbf{Behaviour}\\
-Wifi & 5 & Load all posts and rich content immediately, stream send/rec.\\
-4G & 4 & Load all posts and rich content immediately, stream send/rec.\\
-3G & 3 & Load all posts immediately, load rich content on touch, stream rec.\\
-2G & 2 & Load text only immediately, load images only on touch, no streaming.\\
-unknown & 1 & Assume worst case scenario and use 2G rules.\\
+Default Mode (3G/4G/WiFi) & 3 & load all rich content on startup.\\
+Throttled Mode (GPRS/EDGE) & 2 & only load rich content when the individual post is tapped.\\
+Unknown & 1 & Assume worst case scenario and use throttled mode.\\
 No connection & 0 & throw error message and exit on acknowledgement.\\
 \end{tabular}
 \end{table}
-\section{Territories in which Miles and Yards are to be used as Distance Units}
+\section{Territories in which Miles are to be used as Distance Units}
 \begin{table}[ht]
 \centering
 \label{my-label}
