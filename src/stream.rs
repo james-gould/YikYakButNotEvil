@@ -32,7 +32,7 @@ pub fn success(mut stream: &TcpStream) {
 }
 
 /* sends an error code to the client */
-pub fn error(mut stream: &TcpStream, code: i16)
+pub fn error(stream: &TcpStream, code: i16)
 {
 	let code_vec = code.to_string().into_bytes();
 	send_to_client(&stream, code_vec);

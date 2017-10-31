@@ -127,7 +127,7 @@ pub fn del_post(stream: &TcpStream, dbase: &Connection,
     		println!("Error, client sent no data!");
     		/* pass the user_data struct back to the calling function 
 				This is kind of a dangerous hack because we don't know
-				we haven't been set crappy user data, TODO fix this later!
+				we haven't been sent crappy user data, TODO fix this later!
     		*/
 		    return Some(user_data.unwrap());
     	}
@@ -198,7 +198,7 @@ pub fn get_replies(stream: &TcpStream, dbase: &Connection)
 	/* tell the client we're ready for IO */
 	//stream::ready(&stream);
 
-	let mut raw_data: Vec<u8>;
+	let raw_data: Vec<u8>;
 
 	/* retrieve the response */
     match stream::recieve_from_client_quiet(&stream) {

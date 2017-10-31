@@ -237,7 +237,7 @@ pub fn vote(dbase: &Connection, mode: i8, post_id: i64)
 	}
 	match trn.commit() {
 		Ok(_) => (),
-		Err(e) => println!("Failed to commit, error {}", e),
+		Err(e) => println!("Failed to commit, error {}. Rollback.", e),
 	}
 }
 

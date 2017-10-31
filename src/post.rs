@@ -1,7 +1,6 @@
 /* functions for encoding, decoding and general post IO */
 use byteorder::{BigEndian, ByteOrder};
 use std::error::Error;
-use std::io;
 use std::fmt;
 use rand::*;
 
@@ -30,7 +29,7 @@ pub struct Post
 pub enum PostError
 {
 	MalformedMetadataError,
-	InvalidTimeError,
+	InvalidTimeError, //TODO implement this properly
 }
 
 impl fmt::Display for PostError
@@ -71,7 +70,7 @@ pub struct User
 pub enum UserDataError
 {
 	MalformedMetadataError,
-	InvalidLocationError,
+	InvalidLocationError, //TODO implement this properly
 }
 
 impl fmt::Display for UserDataError
@@ -102,19 +101,12 @@ pub fn post_encode(target: Post) -> Vec<u8>
 	/* encode the text */
 	let mut raw_text = target.text;
 	
-	/* posts which are received from the client (IE all of them) acquire a
-	 * newline character when they're fed through the stream IO functions.
-	 * we DO NOT WANT this as it'll make anything reading it assume the stream
-	 * has finished so strip that little bastard out before it can ruin our day
-	 */
-	 
-	 let bastard_newline = raw_text.pop().unwrap();
-	 
-	 /* P.S. if we got to this point and an unwrap call will break it then God
-	  * help us, because then the TCP server is fucked and so is our launch.
-	  */
-	 
-	 let text_buffer = raw_text.as_bytes();
+	/* strip out the newline at the end of the text, it fucks up the
+	 * binary protocol something nasty */
+	let last_char_index = raw_text.len();
+	raw_text.remove(last_char_index);
+	
+	let text_buffer = raw_text.as_bytes();
 
 	/* encode the post header */
 	let header_buffer = "POST".as_bytes();
@@ -138,6 +130,7 @@ pub fn post_encode(target: Post) -> Vec<u8>
 	/* encode the upvotes */
 	let mut upvotes_buffer = [0; 2];
 	BigEndian::write_i16(&mut upvotes_buffer, target.upvotes); 
+	
 	/* encode the downvotes */
 	let mut downvotes_buffer = [0; 2];
 	BigEndian::write_i16(&mut downvotes_buffer, target.downvotes);
@@ -181,6 +174,7 @@ pub fn post_decode(mut target: Vec<u8>) -> Result<Post, PostError>
 
 	/* decode the text */
 	let text_buffer = target.split_off(44);
+	// DANGEROUS AS FUCK, TODO WRAP THIS
 	let text = String::from_utf8(text_buffer).unwrap();
 
 	/* decode the user ID */
@@ -237,6 +231,8 @@ pub fn post_decode(mut target: Vec<u8>) -> Result<Post, PostError>
 /* decode incoming user data and return a User struct */
 pub fn user_decode(mut target: Vec<u8>) -> Result<User, UserDataError>
 {
+	/* if the data is obviously malformed because of insufficient length,
+	 * return an error */
 	if target.len() < 22 {
 		return Err(UserDataError::MalformedMetadataError);
 	}
